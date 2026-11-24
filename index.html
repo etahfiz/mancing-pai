@@ -4,10 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Mancing PAI Nusantara — Persiapan ASAS Kelas VII</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans (UI) & Scheherazade New / Amiri (Arab) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+  <!-- MQTT WebSockets & SheetJS (XLSX) -->
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <style>
@@ -35,7 +38,7 @@
       font-family: var(--font-ar);
       direction: rtl;
       unicode-bidi: isolate;
-      line-height: 2.15;
+      line-height: 2.2;
     }
 
     .btn-arcade {
@@ -47,7 +50,7 @@
 
     .btn-rare-glow {
       background: linear-gradient(135deg, #581c87 0%, #7e22ce 50%, #b45309 100%);
-      box-shadow: 0 6px 20px rgba(126, 34, 206, 0.35);
+      box-shadow: 0 6px 20px rgba(126, 34, 206, 0.32);
       animation: rarePulse 2.6s ease-in-out infinite;
     }
     @keyframes rarePulse {
@@ -85,7 +88,7 @@
 </head>
 <body class="antialiased">
 
-  <!-- ==================== 1. LAYAR COUNTDOWN (00.00 - 17.59 WIB) ==================== -->
+  <!-- ==================== 1. LAYAR COUNTDOWN / TERKUNCI ==================== -->
   <section id="countdownScreen" class="hidden min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-sky-100 p-6 space-y-5">
       <div class="flex items-center justify-between">
@@ -96,12 +99,12 @@
       </div>
 
       <div class="text-center space-y-1.5">
-        <p id="cdSubtitle" class="text-xs font-bold uppercase tracking-wider text-sky-600">Persiapan ASAS PAI Kelas VII (7A–7I)</p>
-        <h1 class="text-2xl font-extrabold text-slate-900">Menuju Main Bareng</h1>
+        <p class="text-xs font-bold uppercase tracking-wider text-sky-600">Persiapan ASAS PAI Kelas VII (7A–7I)</p>
+        <h1 id="cdTitle" class="text-2xl font-extrabold text-slate-900">Menuju Main Bareng</h1>
         <p id="cdDateLabel" class="text-sm font-semibold text-slate-500">Jumat, 27 November 2026 • 18.00–21.00 WIB</p>
       </div>
 
-      <div class="grid grid-cols-3 gap-2.5 text-center">
+      <div id="cdTimerGrid" class="grid grid-cols-3 gap-2.5 text-center">
         <div class="bg-slate-900 text-white rounded-2xl py-3.5 px-2">
           <div id="cdHours" class="text-3xl font-extrabold tabular-nums">00</div>
           <div class="text-[10px] font-bold uppercase tracking-widest text-sky-300 mt-0.5">Jam</div>
@@ -116,9 +119,13 @@
         </div>
       </div>
 
+      <div id="cdLockedNotice" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-center text-xs font-bold text-amber-900">
+        Permainan hanya dibuka otomatis pada 27–29 November 2026 pukul 18.00–21.00 WIB, kecuali dibuka manual oleh guru.
+      </div>
+
       <div class="bg-sky-50 border border-sky-200 rounded-2xl p-3.5 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-sky-700">Token Sesi Hari Ini</div>
+          <div class="text-[11px] font-bold text-sky-700">Token Sesi Terdekat</div>
           <div id="cdTokenText" class="text-lg font-extrabold tracking-widest text-slate-900">LATIHANASAS1</div>
         </div>
         <div class="text-right">
@@ -129,9 +136,9 @@
 
       <div class="text-[11px] text-slate-500 bg-slate-50 rounded-2xl p-3 space-y-1">
         <div class="font-bold text-slate-700">Jadwal Resmi Main Bareng (18.00–21.00 WIB):</div>
-        <div>• Jum, 27 Nov 2026: <b>LATIHANASAS1</b></div>
-        <div>• Sab, 28 Nov 2026: <b>LATIHANASAS2</b></div>
-        <div>• Min, 29 Nov 2026: <b>LATIHANASAS3</b></div>
+        <div>• Jumat, 27 Nov 2026: <b>LATIHANASAS1</b></div>
+        <div>• Sabtu, 28 Nov 2026: <b>LATIHANASAS2</b></div>
+        <div>• Minggu, 29 Nov 2026: <b>LATIHANASAS3</b></div>
       </div>
 
       <div class="flex items-center justify-between pt-1 text-xs">
@@ -189,7 +196,7 @@
           <div>
             <label class="block text-xs font-extrabold text-slate-700 mb-1">Token Ruangan</label>
             <input id="inputToken" type="text" required maxlength="20" placeholder="Masukkan token" autocomplete="off"
-              class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:outline-none text-sm font-extrabold uppercase tracking-wider" />
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 focus:outline-none text-sm font-extrabold uppercase tracking-wider" />
           </div>
         </div>
 
@@ -285,7 +292,7 @@
       <div id="canvasToast" class="hidden absolute top-3 left-1/2 -translate-x-1/2 px-3.5 py-1.5 rounded-full bg-slate-900/90 text-white text-xs font-extrabold whitespace-nowrap pointer-events-none"></div>
     </div>
 
-    <!-- 4 Spot Pancing (Grid 2x2) -->
+    <!-- 4 Spot Pancing (Grid 2x2 Mobile-First) -->
     <div class="grid grid-cols-2 gap-2.5">
       <button type="button" id="btnSpotDangkal" onclick="castLine('dangkal')"
         class="btn-arcade text-left p-3.5 rounded-2xl bg-gradient-to-br from-cyan-500 to-sky-600 text-white shadow-sm">
@@ -294,7 +301,7 @@
           <span class="px-2 py-0.5 rounded-full bg-white/20 text-[11px] font-extrabold">+1 Pt</span>
         </div>
         <div class="text-sm font-extrabold mt-1">🐟 Mudah (C1–C2)</div>
-        <div class="text-[10px] opacity-85 mt-0.5 truncate">Wader, Lele, Nila, Bandeng</div>
+        <div class="text-[10px] opacity-85 mt-0.5 truncate">Wader, Lele, Mujair, Bandeng</div>
       </button>
 
       <button type="button" id="btnSpotTengah" onclick="castLine('tengah')"
@@ -323,8 +330,8 @@
           <span class="text-xs font-extrabold uppercase tracking-wide text-amber-200">Spot Rare 👑</span>
           <span class="px-2 py-0.5 rounded-full bg-amber-400/30 text-amber-100 text-[11px] font-extrabold">+5 Pt</span>
         </div>
-        <div class="text-sm font-extrabold mt-1">🐉 Khusus Teks Arab</div>
-        <div class="text-[10px] text-amber-100/90 mt-0.5 truncate">Napoleon, Coelacanth, Arwana</div>
+        <div class="text-sm font-extrabold mt-1">🐡 Khusus Teks Arab</div>
+        <div class="text-[10px] text-amber-100/90 mt-0.5 truncate">Napoleon, Koi, Arwana Red</div>
       </button>
     </div>
 
@@ -388,7 +395,7 @@
         <span id="qLockBadge" class="text-[11px] font-bold text-amber-600">Baca soal...</span>
       </div>
 
-      <div id="qArabicBox" class="hidden bg-amber-50/80 border border-amber-200 rounded-2xl p-3 text-center">
+      <div id="qArabicBox" class="hidden bg-amber-50/80 border border-amber-200 rounded-2xl p-3.5 text-center">
         <div id="qArabicText" class="font-arabic text-2xl sm:text-3xl font-bold text-slate-900"></div>
       </div>
 
@@ -498,7 +505,7 @@
       <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
         <div>
           <h3 class="text-base sm:text-lg font-extrabold text-slate-900">👩‍🏫 Panel Kontrol Guru — Mancing PAI</h3>
-          <p id="teacherStatusDesc" class="text-[11px] font-bold text-slate-500">Mode Jadwal Resmi WIB</p>
+          <p id="teacherStatusDesc" class="text-[11px] font-bold text-slate-500">Mode Jadwal Resmi WIB (27–29 Nov 2026)</p>
         </div>
         <button type="button" onclick="closeModal('teacherPanelModal')" class="btn-arcade px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-extrabold">Tutup ✕</button>
       </div>
@@ -540,11 +547,17 @@
 
       <!-- Filter Pantauan & Ekspor -->
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <select id="teacherTokenSelect" onchange="changeTeacherWatchToken(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-extrabold bg-white">
             <option value="LATIHANASAS1">LATIHANASAS1 (Jum 27 Nov)</option>
             <option value="LATIHANASAS2">LATIHANASAS2 (Sab 28 Nov)</option>
             <option value="LATIHANASAS3">LATIHANASAS3 (Min 29 Nov)</option>
+          </select>
+          <select id="teacherClassFilter" onchange="renderTeacherTable()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-extrabold bg-white">
+            <option value="ALL">Semua Kelas (7A–7I)</option>
+            <option value="7A">7A</option><option value="7B">7B</option><option value="7C">7C</option>
+            <option value="7D">7D</option><option value="7E">7E</option><option value="7F">7F</option>
+            <option value="7G">7G</option><option value="7H">7H</option><option value="7I">7I</option>
           </select>
           <span id="teacherCountBadge" class="px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-extrabold">0 Siswa</span>
         </div>
@@ -566,6 +579,7 @@
               <th class="p-2">Nama Siswa</th>
               <th class="p-2">Kls</th>
               <th class="p-2">Poin</th>
+              <th class="p-2">Ikan</th>
               <th class="p-2">B/S</th>
               <th class="p-2">Akurasi</th>
               <th class="p-2">Soal</th>
@@ -581,14 +595,14 @@
   <!-- ==================== SCRIPT UTAMA ==================== -->
   <script>
     /* =========================================================================
-       1. KONFIGURASI, JADWAL RESMI WIB, KATALOG IKAN NUSANTARA
+       1. KONFIGURASI, JADWAL RESMI WIB, & KATALOG IKAN ASLI INDONESIA
        ========================================================================= */
     const TEACHER_PIN = '123456';
     const MQTT_BROKER_URL = 'wss://broker.emqx.io:8084/mqtt';
     const MQTT_BASE_TOPIC = 'mancingpai/asas2026';
 
-    const STORAGE_KEY_PROFILES = 'mancing_pai_asas2026_profiles_v4';
-    const STORAGE_KEY_OVERRIDE = 'mancing_pai_asas2026_override_v4';
+    const STORAGE_KEY_PROFILES = 'mancing_pai_asas2026_profiles_v5';
+    const STORAGE_KEY_OVERRIDE = 'mancing_pai_asas2026_override_v5';
     const STORAGE_KEY_LITE = 'mancing_pai_lite_mode';
 
     const ALL_CLASSES = ['7A', '7B', '7C', '7D', '7E', '7F', '7G', '7H', '7I'];
@@ -606,155 +620,166 @@
       rare:    { label: 'Spot Rare 👑', points: 5, depth: 0.90, badgeClass: 'bg-purple-100 text-purple-900' }
     };
 
+    // Semua tangkapan wajib menggunakan ikon ikan asli (🐟, 🐠, 🐡, 🦈)
     const FISH_CATALOG = {
       dangkal: [
-        { name: 'Ikan Wader Kali', emoji: '🐟', price: 'Rp 18.000/kg' },
-        { name: 'Ikan Lele Lokal', emoji: '🐟', price: 'Rp 26.000/kg' },
-        { name: 'Ikan Mujair', emoji: '🐟', price: 'Rp 32.000/kg' },
-        { name: 'Ikan Nila Merah', emoji: '🐟', price: 'Rp 38.000/kg' },
-        { name: 'Ikan Kembung Banjar', emoji: '🐟', price: 'Rp 45.000/kg' },
-        { name: 'Ikan Bandeng Sidoarjo', emoji: '🐟', price: 'Rp 48.000/kg' }
+        { name: 'Wader Kali', emoji: '🐟', price: 'Rp 15.000' },
+        { name: 'Lele Dumbo', emoji: '🐟', price: 'Rp 25.000' },
+        { name: 'Mujair', emoji: '🐟', price: 'Rp 30.000' },
+        { name: 'Nila Merah', emoji: '🐠', price: 'Rp 35.000' },
+        { name: 'Kembung Banjar', emoji: '🐟', price: 'Rp 45.000' },
+        { name: 'Bandeng Sidoarjo', emoji: '🐟', price: 'Rp 55.000' }
       ],
       tengah: [
-        { name: 'Ikan Patin Sungai', emoji: '🐠', price: 'Rp 52.000/kg' },
-        { name: 'Ikan Cakalang Manado', emoji: '🐠', price: 'Rp 65.000/kg' },
-        { name: 'Ikan Gurame Soang', emoji: '🐠', price: 'Rp 78.000/kg' },
-        { name: 'Ikan Tenggiri Papan', emoji: '🐠', price: 'Rp 115.000/kg' },
-        { name: 'Ikan Kakap Merah', emoji: '🐠', price: 'Rp 130.000/kg' },
-        { name: 'Ikan Baronang Lingkis', emoji: '🐠', price: 'Rp 145.000/kg' }
+        { name: 'Patin Sungai', emoji: '🐟', price: 'Rp 75.000' },
+        { name: 'Cakalang Sulawesi', emoji: '🐟', price: 'Rp 95.000' },
+        { name: 'Gurame Soang', emoji: '🐠', price: 'Rp 120.000' },
+        { name: 'Tenggiri Bangka', emoji: '🐟', price: 'Rp 160.000' },
+        { name: 'Kakap Merah', emoji: '🐠', price: 'Rp 220.000' },
+        { name: 'Baronang', emoji: '🐠', price: 'Rp 180.000' }
       ],
       dalam: [
-        { name: 'Ikan Kerapu Sunu', emoji: '🐡', price: 'Rp 480.000/kg' },
-        { name: 'Tuna Sirip Kuning', emoji: '🐟', price: 'Rp 650.000/kg' },
-        { name: 'Ikan Belida Sumatera', emoji: '🦈', price: 'Rp 850.000/ekor' },
-        { name: 'Ikan Semah / Dewa', emoji: '🐟', price: 'Rp 1.500.000/kg' },
-        { name: 'Tuna Sirip Biru Selatan', emoji: '🦈', price: 'Rp 4.200.000/ekor' }
+        { name: 'Kerapu Sunu', emoji: '🐠', price: 'Rp 650.000' },
+        { name: 'Tuna Sirip Kuning', emoji: '🐟', price: 'Rp 900.000' },
+        { name: 'Belida Sumatera', emoji: '🐟', price: 'Rp 1.500.000' },
+        { name: 'Ikan Semah / Dewa', emoji: '🐠', price: 'Rp 2.500.000' },
+        { name: 'Tuna Sirip Biru Selatan', emoji: '🦈', price: 'Rp 6.000.000' }
       ],
       rare: [
-        { name: 'Napoleon Wrasse', emoji: '👑', price: 'Rp 3.800.000/kg' },
-        { name: 'Arwana Golden Red Riau', emoji: '🐉', price: 'Rp 18.000.000/ekor' },
-        { name: 'Coelacanth Manado (Purba)', emoji: '🦕', price: 'Rp 35.000.000 (Langka)' },
-        { name: 'Arwana Super Red Kalimantan', emoji: '🐉', price: 'Rp 65.000.000/ekor' }
+        { name: 'Ikan Napoleon Wrasse Raja Ampat', emoji: '🐡', price: 'Rp 18.000.000' },
+        { name: 'Ikan Koi Kohaku Juara Nusantara', emoji: '🐠', price: 'Rp 25.000.000' },
+        { name: 'Arwana Golden Red Riau', emoji: '🐠', price: 'Rp 35.000.000' },
+        { name: 'Arwana Super Red Kalimantan', emoji: '🐠', price: 'Rp 65.000.000' }
       ]
     };
 
     /* =========================================================================
        2. DATABASE TEPAT 100 SOAL ORISINAL PAI KELAS VII (BAB 1 - BAB 4)
-          - 25 Spot Dangkal (+1) | 25 Spot Tengah (+2) | 25 Spot Dalam (+4) | 25 Spot Rare Arab (+5)
+          - Spot Dangkal (+1 Pt): 43 soal (C1-C2, Bahasa Indonesia)
+          - Spot Tengah  (+2 Pt): 40 soal (C3, Bahasa Indonesia)
+          - Spot Dalam   (+4 Pt): 10 soal (HOTS C4-C5, Bahasa Indonesia)
+          - Spot Rare    (+5 Pt):  7 soal (Khusus Teks Arab berharakat lengkap)
        ========================================================================= */
     const QUESTION_BANK = {
+      /* ==================== 43 SOAL SPOT DANGKAL (+1 POIN) ==================== */
       dangkal: [
         { q: "Secara bahasa, kata Al-Qur'an berasal dari kata qara'a yang artinya...", opts: ["Bacaan", "Tulisan", "Aturan", "Pelajaran"], a: 0, exp: "Al-Qur'an berasal dari kata qara'a yang bermakna bacaan." },
-        { q: "Sumber hukum Islam kedua setelah Al-Qur'an adalah...", opts: ["Hadis / Sunah", "Ijma'", "Qiyas", "Urf"], a: 0, exp: "Hadis atau Sunah Nabi Muhammad saw. adalah sumber hukum Islam kedua." },
-        { q: "Surah dalam Al-Qur'an yang memerintahkan taat kepada Allah, Rasul, dan Ulil Amri adalah...", opts: ["Q.S. an-Nisa'/4: 59", "Q.S. al-Baqarah/2: 186", "Q.S. al-Mulk/67: 14", "Q.S. al-A'raf/7: 180"], a: 0, exp: "Perintah taat kepada Allah, Rasul, dan Ulil Amri terdapat pada Q.S. an-Nisa'/4: 59." },
-        { q: "Jumlah huruf Alif Lam Syamsiyyah dalam ilmu tajwid adalah...", opts: ["14 huruf", "12 huruf", "15 huruf", "28 huruf"], a: 0, exp: "Huruf hijaiyah terbagi 14 huruf Syamsiyyah dan 14 huruf Qamariyyah." },
-        { q: "Ciri utama bacaan Alif Lam Syamsiyyah pada mushaf Al-Qur'an adalah...", opts: ["Huruf setelah Alif Lam bertasydid", "Huruf Lam berharakat sukun", "Dibaca jelas tanpa dengung", "Selalu berada di akhir ayat"], a: 0, exp: "Pada Alif Lam Syamsiyyah, suara Lam lebur ke huruf berikutnya yang bertasydid." },
-        { q: "Segala sesuatu yang disandarkan kepada sahabat dan tabiin disebut...", opts: ["Asar", "Sunah", "Khabar", "Wahyu"], a: 0, exp: "Asar adalah riwayat yang disandarkan kepada sahabat atau tabiin." },
-        { q: "Jumlah Al-Asma' al-Husna yang populer diajarkan dalam hadis Nabi saw. adalah...", opts: ["99 nama", "90 nama", "100 nama", "77 nama"], a: 0, exp: "Sesuai hadis riwayat Bukhari, Allah memiliki 99 nama yang indah." },
-        { q: "Arti dari Al-Asma' al-Husna Al-'Alim adalah Allah Maha...", opts: ["Mengetahui", "Mendengar", "Melihat", "Teliti"], a: 0, exp: "Al-'Alim berarti Allah Swt. Maha Mengetahui segala sesuatu." },
-        { q: "Arti dari Al-Asma' al-Husna Al-Khabir adalah Allah Maha...", opts: ["Teliti / Maha Memberitahu", "Mendengar", "Melihat", "Bijaksana"], a: 0, exp: "Al-Khabir bermakna Allah Maha Teliti dan Maha Memberitahu." },
+        { q: "Sumber hukum Islam kedua setelah Al-Qur'an adalah...", opts: ["Hadis / Sunah", "Ijma'", "Qiyas", "Tradisi"], a: 0, exp: "Hadis atau Sunah Nabi Muhammad saw. merupakan sumber hukum Islam kedua." },
+        { q: "Surah dalam Al-Qur'an yang memuat perintah taat kepada Allah, Rasul, dan Ulil Amri adalah...", opts: ["Q.S. an-Nisa'/4: 59", "Q.S. al-Baqarah/2: 186", "Q.S. al-Mulk/67: 14", "Q.S. al-A'raf/7: 180"], a: 0, exp: "Perintah taat kepada Allah, Rasul, dan Ulil Amri tercantum dalam Q.S. an-Nisa'/4: 59." },
+        { q: "Surah Al-Qur'an yang menjelaskan bahwa Al-Qur'an diturunkan agar Nabi menjelaskan perkara yang diperselisihkan adalah...", opts: ["Q.S. an-Nahl/16: 64", "Q.S. al-Isra'/17: 1", "Q.S. al-Ahzab/33: 41", "Q.S. Ali Imran/3: 102"], a: 0, exp: "Q.S. an-Nahl/16: 64 menjelaskan fungsi Al-Qur'an sebagai penjelas, petunjuk, dan rahmat." },
+        { q: "Jumlah huruf Alif Lam Syamsiyyah dalam kaidah ilmu tajwid adalah...", opts: ["14 huruf", "12 huruf", "15 huruf", "28 huruf"], a: 0, exp: "Huruf hijaiyah terbagi menjadi 14 huruf Syamsiyyah dan 14 huruf Qamariyyah." },
+        { q: "Jumlah huruf Alif Lam Qamariyyah dalam ilmu tajwid adalah...", opts: ["14 huruf", "10 huruf", "16 huruf", "18 huruf"], a: 0, exp: "Sama seperti Syamsiyyah, huruf Alif Lam Qamariyyah berjumlah 14 huruf." },
+        { q: "Ciri visual bacaan Alif Lam Syamsiyyah dalam mushaf Al-Qur'an adalah...", opts: ["Huruf setelah Alif Lam bertasydid", "Huruf Lam bertanda sukun", "Dibaca jelas tanpa lebur", "Terdapat tanda mad di atas Lam"], a: 0, exp: "Pada Alif Lam Syamsiyyah, suara Lam melebur ke huruf berikutnya yang bertasydid." },
+        { q: "Nama lain dari bacaan Alif Lam Syamsiyyah karena suara Lam dimasukkan ke huruf berikutnya adalah...", opts: ["Idgam Syamsiyyah", "Izhar Qamariyyah", "Ikhfa' Haqiqi", "Iqlab Syamsiyyah"], a: 0, exp: "Alif Lam Syamsiyyah disebut juga Idgam Syamsiyyah." },
+        { q: "Nama lain dari bacaan Alif Lam Qamariyyah karena suara Lam dibaca terang dan jelas adalah...", opts: ["Izhar Qamariyyah", "Idgam Syamsiyyah", "Gunnah Musyaddadah", "Mad Tabi'i"], a: 0, exp: "Alif Lam Qamariyyah dibaca jelas sehingga disebut Izhar Qamariyyah." },
+        { q: "Segala sesuatu yang disandarkan kepada para sahabat Nabi dan tabiin disebut...", opts: ["Asar", "Sunah", "Khabar", "Wahyu"], a: 0, exp: "Asar adalah riwayat yang disandarkan kepada sahabat dan tabiin." },
+        { q: "Segala sesuatu yang bersumber dari Nabi Muhammad saw. baik perkataan, perbuatan, ketetapan, tabiat, maupun perjalanan hidupnya disebut...", opts: ["Sunah", "Asar", "Tafsir", "Ijtihad"], a: 0, exp: "Sunah mencakup perkataan, perbuatan, taqrir, tabiat, dan perjalanan hidup Nabi saw." },
+        { q: "Istilah untuk segala sesuatu yang berasal atau disandarkan kepada Nabi Muhammad saw. maupun selain beliau disebut...", opts: ["Khabar", "Asar", "Qiyas", "Ijma'"], a: 0, exp: "Khabar lebih umum karena dapat disandarkan kepada Nabi saw. maupun selainnya." },
+        { q: "Pengertian taqrir dalam definisi hadis adalah...", opts: ["Ketetapan atau persetujuan Nabi saw.", "Ucapan langsung Nabi saw.", "Perbuatan fisik Nabi saw.", "Kisah para sahabat Nabi saw."], a: 0, exp: "Taqrir adalah persetujuan atau diamnya Nabi saw. terhadap perbuatan sahabat." },
+        { q: "Fungsi hadis sebagai Bayan al-Nasakh secara bahasa berarti...", opts: ["Membatalkan atau mengubah ketentuan terdahulu", "Memperkuat ayat Al-Qur'an", "Memerinci ayat yang umum", "Menambah pahala membaca"], a: 0, exp: "Bayan al-Nasakh berarti membatalkan ketentuan lama dengan ketentuan baru yang lebih maslahat." },
+        { q: "Ulama mazhab yang diceritakan dalam buku PAI Kelas VII sudah hafal Al-Qur'an sejak usia 7 tahun adalah...", opts: ["Imam al-Syafi'i", "Imam Malik", "Imam Hanafi", "Imam Bukhari"], a: 0, exp: "Imam al-Syafi'i (Muhammad bin Idris) hafal Al-Qur'an sejak usia 7 tahun." },
+        { q: "Secara bahasa, kata al-Asma' al-Husna memiliki arti...", opts: ["Nama-nama Allah yang baik dan indah", "Sifat-sifat para malaikat", "Kisah-kisah para nabi", "Hukum-hukum syariat Islam"], a: 0, exp: "Al-Asma' berarti nama-nama dan al-Husna berarti yang terbaik/indah." },
+        { q: "Jumlah Al-Asma' al-Husna yang populer diajarkan dalam hadis riwayat Imam al-Bukhari adalah...", opts: ["99 nama", "90 nama", "100 nama", "77 nama"], a: 0, exp: "Dalam H.R. al-Bukhari disebutkan Allah memiliki 99 nama, seratus kurang satu." },
+        { q: "Dalil Al-Qur'an yang memerintahkan manusia berdoa dengan menyebut Al-Asma' al-Husna adalah...", opts: ["Q.S. al-A'raf/7: 180", "Q.S. an-Nisa'/4: 59", "Q.S. al-Ma'un/107: 4", "Q.S. al-Ahzab/33: 41"], a: 0, exp: "Q.S. al-A'raf/7: 180 memerintahkan memohon kepada Allah dengan menyebut Al-Asma' al-Husna." },
+        { q: "Arti dari Al-Asma' al-Husna Al-'Alim adalah Allah Maha...", opts: ["Mengetahui", "Mendengar", "Melihat", "Teliti"], a: 0, exp: "Al-'Alim berarti Allah Swt. Maha Mengetahui segala sesuatu tanpa batas." },
+        { q: "Arti dari Al-Asma' al-Husna Al-Khabir adalah Allah Maha...", opts: ["Teliti / Maha Memberitahu", "Mendengar", "Melihat", "Bijaksana"], a: 0, exp: "Al-Khabir bermakna Allah Swt. Maha Teliti dan Maha Memberitahu." },
         { q: "Arti dari Al-Asma' al-Husna As-Sami' adalah Allah Maha...", opts: ["Mendengar", "Melihat", "Mengetahui", "Mencipta"], a: 0, exp: "As-Sami' berarti Allah Swt. Maha Mendengar seluruh suara di alam semesta." },
-        { q: "Arti dari Al-Asma' al-Husna Al-Basir adalah Allah Maha...", opts: ["Melihat", "Mendengar", "Mengetahui", "Pengasih"], a: 0, exp: "Al-Basir berarti Allah Swt. Maha Melihat segala sesuatu." },
-        { q: "Dalil yang bersumber dari akal pikiran manusia yang sehat disebut dalil...", opts: ["Aqli", "Naqli", "Syari", "Qat'i"], a: 0, exp: "Dalil aqli bersumber dari akal, sedangkan dalil naqli dari Al-Qur'an dan Hadis." },
+        { q: "Arti dari Al-Asma' al-Husna Al-Basir adalah Allah Maha...", opts: ["Melihat", "Mendengar", "Mengetahui", "Pengasih"], a: 0, exp: "Al-Basir berarti Allah Swt. Maha Melihat segala sesuatu yang tampak maupun tersembunyi." },
+        { q: "Dalil yang bersumber dari akal pikiran sehat manusia untuk membuktikan kebesaran Allah disebut dalil...", opts: ["Aqli", "Naqli", "Syari", "Qat'i"], a: 0, exp: "Dalil aqli bersumber dari penalaran akal, sedangkan dalil naqli dari Al-Qur'an dan Hadis." },
+        { q: "Dalil yang bersumber langsung dari Al-Qur'an dan Hadis disebut dalil...", opts: ["Naqli", "Aqli", "Fikih", "Sosial"], a: 0, exp: "Dalil naqli adalah dalil yang dinukil dari wahyu Al-Qur'an dan Hadis." },
+        { q: "Kitab yang nyata tempat tertulisnya seluruh catatan kejadian di alam semesta menurut Q.S. al-An'am/6: 59 adalah...", opts: ["Lauh al-Mahfuzh", "Zabur", "Taurat", "Injil"], a: 0, exp: "Semua kejadian di darat dan laut tercatat rapi di Lauh al-Mahfuzh." },
         { q: "Secara bahasa, kata salat memiliki arti...", opts: ["Doa", "Ingat", "Sujud", "Bersuci"], a: 0, exp: "Salat secara bahasa berarti doa atau memohon kebaikan." },
-        { q: "Ibadah yang disebut sebagai tiang agama dalam Islam adalah...", opts: ["Salat", "Puasa", "Zakat", "Sedekah"], a: 0, exp: "Rasulullah saw. bersabda bahwa salat adalah tiang agama." },
+        { q: "Secara istilah, salat adalah perkataan dan perbuatan tertentu yang diawali dengan takbiratul ihram dan diakhiri dengan...", opts: ["Salam", "Rukuk", "Iktidal", "Doa qunut"], a: 0, exp: "Salat dimulai dengan takbiratul ihram dan ditutup dengan salam." },
+        { q: "Ibadah yang disebut sebagai tiang agama dalam hadis riwayat al-Baihaqi adalah...", opts: ["Salat", "Puasa", "Zakat", "Haji"], a: 0, exp: "Salat adalah tiang agama; mendirikannya berarti menegakkan agama." },
         { q: "Secara bahasa, kata zikir memiliki arti...", opts: ["Ingat", "Doa", "Tunduk", "Sabar"], a: 0, exp: "Zikir secara bahasa berarti mengingat atau menyebut." },
-        { q: "Bacaan 'Subhanallah' dalam zikir dikenal dengan sebutan...", opts: ["Tasbih", "Tahmid", "Takbir", "Tahlil"], a: 0, exp: "Subhanallah = Tasbih, Alhamdulillah = Tahmid, Allahu Akbar = Takbir, La ilaha illallah = Tahlil." },
-        { q: "Bacaan 'Alhamdulillah' dalam zikir dikenal dengan sebutan...", opts: ["Tahmid", "Tasbih", "Takbir", "Istigfar"], a: 0, exp: "Tahmid adalah ucapan Alhamdulillah (segala puji bagi Allah)." },
-        { q: "Ayat Al-Qur'an yang menegaskan bahwa salat mencegah perbuatan keji dan mungkar adalah...", opts: ["Q.S. al-'Ankabut/29: 45", "Q.S. al-Ahzab/33: 41", "Q.S. al-Baqarah/2: 186", "Q.S. al-Isra'/17: 1"], a: 0, exp: "Q.S. al-'Ankabut/29: 45 menjelaskan bahwa salat mencegah perbuatan keji dan mungkar." },
-        { q: "Sujud yang dilakukan karena lupa atau ragu-ragu dalam salat disebut sujud...", opts: ["Sahwi", "Syukur", "Tilawah", "Rukun"], a: 0, exp: "Sujud sahwi dilakukan untuk menambal kekhilafan atau keraguan dalam salat." },
-        { q: "Sujud yang dilakukan saat mendapat nikmat atau terhindar dari bahaya adalah sujud...", opts: ["Syukur", "Sahwi", "Tilawah", "Sunah"], a: 0, exp: "Sujud syukur adalah wujud terima kasih kepada Allah atas nikmat atau keselamatan." },
-        { q: "Sujud yang dilakukan ketika membaca atau mendengar ayat sajdah disebut sujud...", opts: ["Tilawah", "Syukur", "Sahwi", "Tahiyat"], a: 0, exp: "Sujud tilawah dikerjakan saat membaca atau mendengar ayat sajdah." },
-        { q: "Jumlah ayat sajdah yang terdapat di dalam Al-Qur'an adalah...", opts: ["15 ayat", "10 ayat", "12 ayat", "20 ayat"], a: 0, exp: "Menurut buku paket PAI Kelas VII, terdapat 15 ayat sajdah dalam Al-Qur'an." },
-        { q: "Hukum melaksanakan sujud syukur, sujud sahwi, dan sujud tilawah adalah...", opts: ["Sunah", "Wajib", "Makruh", "Mubah"], a: 0, exp: "Ketiga sujud tersebut hukumnya sunah." },
+        { q: "Bacaan 'Subhanallah' dalam zikir dikenal dengan sebutan...", opts: ["Tasbih", "Tahmid", "Takbir", "Tahlil"], a: 0, exp: "Subhanallah adalah bacaan Tasbih (menyucikan Allah)." },
+        { q: "Bacaan 'Alhamdulillah' dalam zikir dikenal dengan sebutan...", opts: ["Tahmid", "Tasbih", "Takbir", "Tahlil"], a: 0, exp: "Alhamdulillah adalah bacaan Tahmid (memuji Allah)." },
+        { q: "Bacaan 'Allahu Akbar' dalam zikir dikenal dengan sebutan...", opts: ["Takbir", "Tasbih", "Tahmid", "Tahlil"], a: 0, exp: "Allahu Akbar adalah bacaan Takbir (mengagungkan Allah)." },
+        { q: "Bacaan 'La ilaha illallah' dalam zikir dikenal dengan sebutan...", opts: ["Tahlil", "Takbir", "Tasbih", "Tahmid"], a: 0, exp: "La ilaha illallah disebut bacaan Tahlil." },
+        { q: "Ayat Al-Qur'an yang menegaskan bahwa salat dapat mencegah perbuatan keji dan mungkar adalah...", opts: ["Q.S. al-'Ankabut/29: 45", "Q.S. al-Ahzab/33: 41", "Q.S. al-Baqarah/2: 186", "Q.S. al-Isra'/17: 1"], a: 0, exp: "Q.S. al-'Ankabut/29: 45 menyatakan salat mencegah perbuatan keji dan mungkar." },
+        { q: "Ayat Al-Qur'an yang memerintahkan orang beriman untuk berzikir sebanyak-banyaknya adalah...", opts: ["Q.S. al-Ahzab/33: 41", "Q.S. al-Ma'un/107: 4", "Q.S. al-A'raf/7: 180", "Q.S. an-Nisa'/4: 59"], a: 0, exp: "Q.S. al-Ahzab/33: 41 memerintahkan berzikir dengan zikir yang banyak." },
+        { q: "Sujud yang dilakukan karena lupa atau ragu-ragu dalam pelaksanaan salat disebut sujud...", opts: ["Sahwi", "Syukur", "Tilawah", "Rukun"], a: 0, exp: "Sujud sahwi dilakukan untuk menambal kekhilafan atau keraguan dalam salat." },
+        { q: "Sujud yang dilakukan saat memperoleh nikmat atau terhindar dari bahaya adalah sujud...", opts: ["Syukur", "Sahwi", "Tilawah", "Wajib"], a: 0, exp: "Sujud syukur adalah wujud terima kasih kepada Allah atas nikmat atau keselamatan." },
+        { q: "Sujud yang dilakukan ketika membaca atau mendengar ayat sajdah disebut sujud...", opts: ["Tilawah", "Syukur", "Sahwi", "Tahiyat"], a: 0, exp: "Sujud tilawah dilakukan saat membaca atau mendengarkan ayat sajdah." },
+        { q: "Jumlah ayat sajdah yang terdapat di dalam Al-Qur'an adalah...", opts: ["15 ayat", "10 ayat", "12 ayat", "20 ayat"], a: 0, exp: "Terdapat 15 ayat sajdah di dalam Al-Qur'an." },
+        { q: "Hukum melaksanakan sujud syukur, sujud sahwi, dan sujud tilawah adalah...", opts: ["Sunah", "Wajib", "Makruh", "Mubah"], a: 0, exp: "Ketiga jenis sujud tersebut hukumnya sunah." },
         { q: "Sujud sahwi dilaksanakan sebanyak...", opts: ["2 kali sebelum salam", "1 kali setelah salam", "2 kali setelah rukuk", "1 kali sebelum takbir"], a: 0, exp: "Sujud sahwi dilakukan dua kali setelah tasyahud akhir sebelum salam." },
-        { q: "Jumlah sujud dalam seluruh salat fardu lima waktu sehari semalam adalah...", opts: ["34 kali", "17 kali", "24 kali", "30 kali"], a: 0, exp: "17 rakaat salat fardu x 2 sujud per rakaat = 34 kali sujud setiap hari." }
+        { q: "Jumlah sujud dalam seluruh salat fardu lima waktu sehari semalam adalah...", opts: ["34 kali", "17 kali", "24 kali", "30 kali"], a: 0, exp: "17 rakaat salat fardu dikali 2 sujud per rakaat sama dengan 34 kali sujud." },
+        { q: "Satu-satunya jenis salat yang tidak memiliki gerakan sujud di dalamnya adalah salat...", opts: ["Jenazah", "Gerhana", "Istisqa", "Tahajud"], a: 0, exp: "Salat jenazah dilakukan sambil berdiri dengan empat takbir tanpa rukuk dan sujud." }
       ],
+
+      /* ==================== 40 SOAL SPOT TENGAH (+2 POIN) ==================== */
       tengah: [
-        { q: "Fungsi hadis yang memerinci tata cara salat karena Al-Qur'an hanya menyebut perintahnya secara umum disebut...", opts: ["Bayan at-Tafsir", "Bayan at-Taqrir", "Bayan at-Tasyri'", "Bayan an-Nasakh"], a: 0, exp: "Bayan at-Tafsir berarti hadis memerinci ayat Al-Qur'an yang masih bersifat global (mujmal)." },
-        { q: "Hadis yang menetapkan hukum zakat fitrah yang tidak disebutkan rinciannya dalam Al-Qur'an menjalankan fungsi...", opts: ["Bayan at-Tasyri'", "Bayan at-Taqrir", "Bayan at-Tafsir", "Bayan an-Nasakh"], a: 0, exp: "Bayan at-Tasyri' adalah fungsi hadis menetapkan hukum baru yang belum diatur rinci di Al-Qur'an." },
-        { q: "Fungsi hadis yang memperkuat dan memperkokoh hukum yang sudah ada dalam Al-Qur'an disebut...", opts: ["Bayan at-Taqrir", "Bayan at-Tasyri'", "Bayan at-Tafsir", "Bayan an-Nasakh"], a: 0, exp: "Bayan at-Taqrir (atau at-Ta'kid) berfungsi menguatkan isi kandungan Al-Qur'an." },
-        { q: "Jika seorang ketua kelas menyuruh teman-temannya membolos pelajaran, sikap yang sesuai Q.S. an-Nisa'/4: 59 adalah...", opts: ["Menolak dengan santun karena melanggar aturan", "Tetap menaati karena ia Ulil Amri", "Ikut membolos agar kompak", "Memarahi ketua kelas di depan umum"], a: 0, exp: "Ketaatan kepada pemimpin tidak berlaku jika ia memerintahkan kemaksiatan atau pelanggaran." },
-        { q: "Imam al-Syafi'i sudah hafal Al-Qur'an sejak usia 7 tahun berkat ketekunannya. Sikap siswa yang meneladaninya adalah...", opts: ["Rutin membaca dan memahami terjemah Al-Qur'an", "Menyimpan mushaf di lemari kaca saja", "Membaca Al-Qur'an hanya saat ujian praktik", "Menunggu dewasa baru belajar tajwid"], a: 0, exp: "Semangat mendalami Al-Qur'an diwujudkan dengan rutin membaca, memahami, dan bertanya kepada guru." },
-        { q: "Cara membaca Alif Lam Qamariyyah yang benar adalah...", opts: ["Suara Lam dibaca jelas (Izhar)", "Suara Lam lebur ke huruf berikutnya", "Dibaca dengung 2 harakat", "Huruf Alif dibaca panjang"], a: 0, exp: "Alif Lam Qamariyyah dibaca jelas (Izhar Qamariyyah)." },
-        { q: "Siswa yang selalu memeriksa kembali jawaban ujian sebelum dikumpulkan sedang meneladani sifat Allah...", opts: ["Al-Khabir", "As-Sami'", "Al-Quddus", "Al-Malik"], a: 0, exp: "Ketelitian dalam belajar dan memeriksa pekerjaan adalah wujud meneladani Al-Khabir." },
-        { q: "Dina tidak mau menyebarkan berita viral di grup WA sebelum mengecek kebenarannya. Sikap Dina mencerminkan iman kepada...", opts: ["Al-Khabir", "Al-Khaliq", "Al-Muntaqim", "Al-Qahhar"], a: 0, exp: "Meneladani Al-Khabir membuat kita teliti terhadap isi dan sumber informasi." },
-        { q: "Menyimak penjelasan guru dengan penuh perhatian tanpa memotong pembicaraan adalah cerminan meneladani sifat...", opts: ["As-Sami'", "Al-Basir", "Al-'Alim", "Al-Khabir"], a: 0, exp: "Menjadi pendengar yang baik adalah wujud meneladani As-Sami' (Maha Mendengar)." },
-        { q: "Raka membuat jadwal belajar jangka panjang demi meraih cita-citanya masuk SMA favorit. Sikap visioner ini meneladani sifat...", opts: ["Al-Basir", "As-Sami'", "Al-Khabir", "Al-Qawiyy"], a: 0, exp: "Pandangan jauh ke depan (visioner) merupakan cerminan meneladani Al-Basir." },
-        { q: "Meskipun tidak ada CCTV di kantin kejujuran, Sinta tetap membayar sesuai harga jajanan yang diambilnya. Ia meyakini Allah bersifat...", opts: ["Al-Basir", "As-Sami'", "Al-Wahhab", "Al-Latif"], a: 0, exp: "Keyakinan bahwa Allah Maha Melihat (Al-Basir) mendorong kejujuran meski tanpa pengawasan manusia." },
-        { q: "Sikap percaya diri saat menjelaskan kebenaran berdasarkan ilmu yang dipelajari dengan tekun mencerminkan sifat...", opts: ["Al-'Alim", "As-Sami'", "Al-Basir", "Al-Khabir"], a: 0, exp: "Tekun mencari ilmu dan percaya diri menyampaikannya adalah teladan sifat Al-'Alim." },
-        { q: "Dalam buku PAI Kelas VII, perasaan selalu diawasi oleh Allah Swt. dalam setiap gerak-gerik disebut...", opts: ["Muraqabah", "Muhasabah", "Tawakal", "Qanaah"], a: 0, exp: "Muraqabah adalah kesadaran batin bahwa Allah Swt. senantiasa mengawasi kita." },
-        { q: "Merenungkan kebesaran ciptaan Allah di alam semesta sehingga hati mengakui keagungan-Nya termasuk zikir dengan...", opts: ["Hati", "Lisan", "Perbuatan", "Tulisan"], a: 0, exp: "Zikir dengan hati dilakukan melalui tafakur dan merenungkan ciptaan Allah Swt." },
-        { q: "Menaati perintah Allah dan menjauhi larangan-Nya dalam kehidupan sehari-hari termasuk zikir dengan...", opts: ["Perbuatan", "Hati", "Lisan", "Isyarat"], a: 0, exp: "Zikir bil fi'li (perbuatan) diwujudkan dengan menjalankan perintah dan menjauhi larangan-Nya." },
-        { q: "Saat menunggu jemputan di depan sekolah, Faris mengisi waktu luangnya dengan bertasbih. Manfaat langsung yang ia rasakan adalah...", opts: ["Hati menjadi tenang dan terhindar dari perbuatan sia-sia", "Waktu terasa lebih lama", "Mendapat pujian dari teman", "Tidak perlu salat sunah"], a: 0, exp: "Berzikir di waktu luang menenangkan hati dan menjauhkan diri dari hal sia-sia." },
-        { q: "Perumpamaan salat lima waktu menurut hadis riwayat Tirmizi seperti seseorang yang mandi lima kali sehari di sungai, artinya...", opts: ["Menghapus dosa-dosa kecil yang dilakukan", "Membuat tubuh selalu segar", "Menambah kekayaan dunia", "Menggugurkan kewajiban puasa"], a: 0, exp: "Salat lima waktu yang dijaga dengan baik akan menghapus dosa-dosa." },
-        { q: "Upaya paling efektif agar seorang pelajar bisa istikamah melaksanakan salat lima waktu adalah...", opts: ["Segera bersiap salat begitu azan berkumandang dan berteman dengan orang rajin salat", "Menunda salat sampai akhir waktu agar santai", "Salat hanya jika disuruh orang tua", "Menggabungkan semua salat di malam hari"], a: 0, exp: "Menyegerakan salat saat azan dan bergaul dengan teman saleh membantu keistikamahan." },
-        { q: "Ketika salat Zuhur berjamaah, imam membaca ayat sajdah lalu langsung bersujud tilawah. Sikap makmum yang benar adalah...", opts: ["Ikut bersujud tilawah bersama imam lalu berdiri lagi", "Tetap berdiri menunggu imam selesai", "Langsung mengakhiri salat dengan salam", "Mengingatkan imam dengan ucapan tasbih"], a: 0, exp: "Dalam salat berjamaah, makmum wajib mengikuti imam termasuk saat imam sujud tilawah." },
-        { q: "Rina sedang membaca Q.S. al-'Alaq di luar salat dan sampai pada ayat 19 (ayat sajdah). Urutan tata cara sujud tilawah yang benar adalah...", opts: ["Berdiri menghadap kiblat, niat, takbiratul ihram, sujud 1x, duduk sejenak, salam", "Langsung sujud 2x tanpa takbiratul ihram", "Duduk tasyahud awal lalu sujud 1x", "Rukuk terlebih dahulu lalu sujud 2x"], a: 0, exp: "Sujud tilawah di luar salat diawali niat dan takbiratul ihram, sujud 1 kali, duduk, lalu salam." },
-        { q: "Budi selamat dari kecelakaan sepeda motor saat berangkat sekolah tanpa luka sedikit pun. Sujud yang disunahkan untuk Budi adalah...", opts: ["Sujud syukur", "Sujud sahwi", "Sujud tilawah", "Sujud rukun"], a: 0, exp: "Terhindar dari bahaya atau musibah adalah salah satu sebab disunahkannya sujud syukur." },
-        { q: "Saat salat Magrib, Laila lupa tidak melakukan tasyahud awal dan sudah terlanjur berdiri tegak pada rakaat ketiga. Yang harus ia lakukan adalah...", opts: ["Melanjutkan salat hingga tasyahud akhir lalu sujud sahwi 2 kali sebelum salam", "Langsung duduk kembali untuk tasyahud awal", "Membatalkan salat dan mengulang dari rakaat pertama", "Menambah satu rakaat lagi"], a: 0, exp: "Jika lupa tasyahud awal dan sudah berdiri, lanjutkan salat lalu tutup dengan sujud sahwi sebelum salam." },
-        { q: "Dalam kisah Raja Iskandar Zulkarnain yang membangun benteng besi kokoh, hikmah yang sesuai dengan materi sujud adalah...", opts: ["Tetap rendah hati dan mengakui semua keberhasilan adalah rahmat Allah", "Membanggakan kecanggihan teknologi sendiri", "Merasa paling kuat di hadapan manusia", "Menyombongkan kekuasaan kepada rakyat"], a: 0, exp: "Sujud menanamkan sikap rendah hati dan menjauhkan sifat sombong/takabur." },
-        { q: "Salah satu syarat sah melaksanakan sujud tilawah di luar salat adalah...", opts: ["Suci dari hadas dan najis, menghadap kiblat, menutup aurat", "Harus dilaksanakan di dalam masjid", "Wajib membaca surah al-Fatihah terlebih dahulu", "Harus dilakukan secara berjamaah"], a: 0, exp: "Syarat sujud tilawah: suci dari hadas/najis, menghadap kiblat, dan menutup aurat." },
-        { q: "Surah dalam Al-Qur'an yang memiliki dua ayat sajdah sekaligus adalah...", opts: ["Q.S. al-Hajj", "Q.S. al-Baqarah", "Q.S. al-Mulk", "Q.S. al-'Alaq"], a: 0, exp: "Q.S. al-Hajj memiliki dua ayat sajdah, yaitu ayat 18 dan ayat 77." }
+        { q: "Fungsi hadis yang memerinci tata cara salat karena Al-Qur'an hanya menyebut perintahnya secara global disebut...", opts: ["Bayan at-Tafsir", "Bayan at-Taqrir", "Bayan at-Tasyri'", "Bayan an-Nasakh"], a: 0, exp: "Bayan at-Tafsir berarti hadis memerinci ayat Al-Qur'an yang masih bersifat global (mujmal)." },
+        { q: "Hadis yang menetapkan rincian zakat fitrah yang belum disebutkan secara khusus dalam Al-Qur'an menjalankan fungsi...", opts: ["Bayan at-Tasyri'", "Bayan at-Taqrir", "Bayan at-Tafsir", "Bayan an-Nasakh"], a: 0, exp: "Bayan at-Tasyri' adalah fungsi hadis menetapkan kepastian hukum yang belum rinci di Al-Qur'an." },
+        { q: "Fungsi hadis yang memperkuat dan memperkokoh hukum yang sudah tertera dalam Al-Qur'an disebut...", opts: ["Bayan at-Taqrir", "Bayan at-Tasyri'", "Bayan at-Tafsir", "Bayan an-Nasakh"], a: 0, exp: "Bayan at-Taqrir (at-Ta'kid) berfungsi menguatkan isi kandungan Al-Qur'an." },
+        { q: "Jika ketua kelas mengajak teman-temannya membolos pelajaran, sikap siswa yang sesuai Q.S. an-Nisa'/4: 59 adalah...", opts: ["Menolak dengan santun karena melanggar aturan", "Tetap ikut karena ia pemimpin kelas", "Diam saja lalu ikut membolos", "Memarahi ketua kelas dengan kata kasar"], a: 0, exp: "Ketaatan kepada Ulil Amri tidak berlaku jika perintahnya bertentangan dengan kebaikan/syariat." },
+        { q: "Cara paling tepat bagi pelajar SMP untuk mengamalkan semangat mendalami Al-Qur'an sesuai Bab 1 adalah...", opts: ["Membaca Al-Qur'an dengan tajwid, memahami terjemahnya, dan bertanya kepada guru", "Menyimpan mushaf di tempat tinggi tanpa membacanya", "Membaca Al-Qur'an hanya saat lomba MTQ", "Menunggu dewasa baru belajar tajwid"], a: 0, exp: "Semangat mendalami Al-Qur'an diwujudkan dengan rutin membaca, memahami, dan berkonsultasi dengan guru." },
+        { q: "Dalam Q.S. an-Nisa'/4: 59, orang yang taat kepada Rasulullah saw. pada hakikatnya juga taat kepada Allah Swt. karena...", opts: ["Tidak ada satu pun perintah Rasulullah saw. yang bertentangan dengan perintah Allah", "Rasulullah saw. membuat aturan sendiri", "Hadis lebih tinggi daripada Al-Qur'an", "Ulil Amri sama kedudukannya dengan nabi"], a: 0, exp: "Seluruh ajaran Rasulullah saw. bersumber dari wahyu dan sejalan dengan perintah Allah." },
+        { q: "Contoh penerapan ketaatan kepada Ulil Amri di lingkungan sekolah yang sesuai ajaran Islam adalah...", opts: ["Mematuhi tata tertib sekolah dan datang tepat waktu", "Membuat aturan sendiri di kelas", "Hanya menaati guru yang disukai", "Melanggar seragam saat tidak ada razia"], a: 0, exp: "Menaati tata tertib sekolah adalah wujud nyata taat kepada Ulil Amri." },
+        { q: "Ketika membaca Al-Qur'an dan menemukan Alif Lam bertemu huruf Ba, cara membacanya yang benar adalah...", opts: ["Suara Lam dibaca jelas (Izhar Qamariyyah)", "Suara Lam dileburkan ke huruf Ba", "Dibaca dengung 2 harakat", "Huruf Alif dibaca panjang 4 harakat"], a: 0, exp: "Huruf Ba termasuk 14 huruf Qamariyyah sehingga Lam dibaca jelas." },
+        { q: "Ketika membaca Al-Qur'an dan menemukan Alif Lam bertemu huruf Sin, cara membacanya yang benar adalah...", opts: ["Suara Lam melebur ke huruf Sin (Idgam Syamsiyyah)", "Suara Lam dibaca jelas", "Berhenti sejenak sebelum huruf Sin", "Huruf Sin dibaca samar"], a: 0, exp: "Huruf Sin termasuk 14 huruf Syamsiyyah sehingga suara Lam melebur ke Sin." },
+        { q: "Apabila terjadi perbedaan pendapat saat diskusi kelompok di kelas, langkah yang sesuai pesan Q.S. an-Nisa'/4: 59 adalah...", opts: ["Mencari titik temu dengan musyawarah yang adil dan rujukan benar", "Memaksakan pendapat sendiri sampai menang", "Keluar dari kelompok diskusi", "Mengabaikan pendapat anggota lain"], a: 0, exp: "Perselisihan diselesaikan secara bijak dengan kembali pada kebenaran dan musyawarah." },
+        { q: "Siswa yang selalu memeriksa ulang jawaban ujian sebelum dikumpulkan sedang meneladani sifat Allah...", opts: ["Al-Khabir", "As-Sami'", "Al-Quddus", "Al-Malik"], a: 0, exp: "Ketelitian dalam belajar dan memeriksa pekerjaan mencerminkan sifat Al-Khabir." },
+        { q: "Dina tidak langsung meneruskan pesan berantai di grup WA sebelum memastikan kebenaran sumbernya. Sikap Dina meneladani...", opts: ["Al-Khabir", "Al-Khaliq", "Al-Muntaqim", "Al-Qahhar"], a: 0, exp: "Meneladani Al-Khabir mendorong ketelitian memeriksa isi dan sumber informasi." },
+        { q: "Menyimak nasihat orang tua dan guru dengan seksama tanpa memotong pembicaraan adalah cerminan meneladani sifat...", opts: ["As-Sami'", "Al-Basir", "Al-'Alim", "Al-Khabir"], a: 0, exp: "Menjadi pendengar yang baik adalah wujud meneladani sifat As-Sami' (Maha Mendengar)." },
+        { q: "Raka menyusun rencana belajar bertahap untuk meraih cita-citanya di masa depan. Sikap visioner ini meneladani sifat...", opts: ["Al-Basir", "As-Sami'", "Al-Khabir", "Al-Qawiyy"], a: 0, exp: "Memiliki pandangan jauh ke depan (visioner) mencerminkan keteladanan sifat Al-Basir." },
+        { q: "Meskipun tidak ada penjaga di kantin kejujuran, Sinta tetap membayar sesuai harga makanan yang diambilnya. Ia meyakini Allah bersifat...", opts: ["Al-Basir", "As-Sami'", "Al-Wahhab", "Al-Latif"], a: 0, exp: "Meyakini Allah Maha Melihat (Al-Basir) menjaga kejujuran meski tanpa pengawasan manusia." },
+        { q: "Sikap percaya diri menyampaikan kebenaran berdasarkan ilmu yang dipelajari dengan tekun merupakan cerminan sifat...", opts: ["Al-'Alim", "As-Sami'", "Al-Basir", "Al-Khabir"], a: 0, exp: "Tekun mencari ilmu dan percaya diri menyampaikannya adalah teladan sifat Al-'Alim." },
+        { q: "Perasaan batin bahwa diri kita selalu diawasi oleh Allah Swt. sehingga berhati-hati dalam bertindak disebut sikap...", opts: ["Muraqabah", "Muhasabah", "Tawakal", "Qanaah"], a: 0, exp: "Muraqabah adalah kesadaran bahwa Allah Swt. senantiasa mengawasi gerak-gerik kita." },
+        { q: "Berbagi rangkuman pelajaran dengan ikhlas melalui majalah dinding sekolah adalah wujud meneladani sifat...", opts: ["Al-Khabir", "As-Sami'", "Al-Basir", "Al-Quddus"], a: 0, exp: "Dalam buku PAI Kelas VII, berbagi informasi ilmu yang benar di mading meneladani Al-Khabir." },
+        { q: "Ungkapan 'tangan di atas lebih baik daripada tangan di bawah' dalam Bab 2 mengajarkan perilaku...", opts: ["Gemar memberi dan menolong sesama", "Suka meminta-minta bantuan", "Menyimpan harta untuk diri sendiri", "Menolak pemberian teman"], a: 0, exp: "Tangan di atas menggambarkan orang yang gemar memberi dan membantu sesama." },
+        { q: "Seorang pelajar tetap rajin membaca buku meski sudah mendapat peringkat pertama karena ia sadar ilmu manusia terbatas. Ia meneladani sifat...", opts: ["Al-'Alim", "As-Sami'", "Al-Basir", "Al-Khabir"], a: 0, exp: "Pelajar yang meneladani Al-'Alim tidak pernah merasa puas dan terus tekun mendalami ilmu." },
+        { q: "Merenungkan keindahan dan keteraturan ciptaan Allah sehingga hati mengakui keagungan-Nya termasuk zikir dengan...", opts: ["Hati", "Lisan", "Perbuatan", "Tulisan"], a: 0, exp: "Zikir dengan hati dilakukan dengan tafakur merenungkan ciptaan Allah Swt." },
+        { q: "Menaati perintah Allah dan menjauhi larangan-Nya dalam pergaulan sehari-hari termasuk zikir dengan...", opts: ["Perbuatan", "Hati", "Lisan", "Isyarat"], a: 0, exp: "Zikir dengan perbuatan diwujudkan melalui ketaatan menjalankan perintah dan menjauhi larangan-Nya." },
+        { q: "Mengucapkan tasbih, tahmid, takbir, tahlil, dan salawat setelah selesai salat termasuk zikir dengan...", opts: ["Ucapan / Lisan", "Perbuatan", "Hati saja", "Gerakan"], a: 0, exp: "Melafalkan kalimat tayyibah merupakan bentuk zikir dengan ucapan/lisan." },
+        { q: "Saat menunggu angkutan umum pulang sekolah, Faris mengisi waktu kosongnya dengan berzikir. Manfaat langsungnya adalah...", opts: ["Hati tenang dan terhindar dari perbuatan sia-sia", "Angkutan datang lebih cepat", "Mendapat pujian penumpang lain", "Menggugurkan salat Asar"], a: 0, exp: "Memanfaatkan waktu luang untuk berzikir menenangkan jiwa dan menjauhkan dari dosa." },
+        { q: "Hadis riwayat Tirmizi mengumpamakan salat lima waktu seperti mandi di sungai lima kali sehari, yang bermakna salat...", opts: ["Menghapus kesalahan dan dosa-dosa kecil", "Menggantikan kebutuhan mandi setiap hari", "Membuat tubuh kebal penyakit", "Menambah kekayaan harta"], a: 0, exp: "Salat lima waktu yang dijaga dengan baik membersihkan diri dari dosa-dosa." },
+        { q: "Upaya praktis agar seorang pelajar istikamah melaksanakan salat lima waktu adalah...", opts: ["Segera bersiap salat saat azan berkumandang dan bergaul dengan teman rajin salat", "Menunda salat hingga menjelang habis waktu", "Salat hanya ketika diingatkan guru", "Menunggu libur sekolah untuk salat berjamaah"], a: 0, exp: "Menyegerakan salat saat azan dan memilih lingkungan teman saleh menjaga keistikamahan." },
+        { q: "Hikmah utama melaksanakan salat berjamaah dibandingkan salat sendirian di lingkungan sekolah adalah...", opts: ["Mempererat silaturahmi dan melatih kebersamaan antarsesama muslim", "Mempercepat gerakan salat", "Mengurangi jumlah rakaat salat", "Agar tidak perlu membaca al-Fatihah"], a: 0, exp: "Salat berjamaah mempererat ukhuwah/silaturahmi serta bernilai 27 derajat lebih utama." },
+        { q: "Dalam Q.S. al-Ma'un/107: 4–7, golongan orang yang salat namun tetap diancam celaka adalah mereka yang...", opts: ["Lalai terhadap salatnya, berbuat ria, dan enggan menolong sesama", "Salat di rumah karena sakit", "Tidak membaca surah panjang", "Salat terlalu pagi"], a: 0, exp: "Lalai, ria, dan enggan memberi bantuan membuat salat kehilangan ruh ketakwaannya." },
+        { q: "Saat berada dalam kesulitan belajar, seorang muslim mengakui kelemahannya di hadapan Allah dengan cara...", opts: ["Berusaha sungguh-sungguh disertai doa dan zikir kepada Allah", "Menyerah tanpa belajar", "Menyalahkan teman sebangku", "Berharap belas kasihan orang lain"], a: 0, exp: "Berdoa dan berzikir adalah wujud pengakuan ketergantungan manusia kepada Allah Swt." },
+        { q: "Niat yang benar ketika melaksanakan salat dan zikir agar bernilai ibadah di sisi Allah adalah...", opts: ["Tulus semata-mata mengharap rida Allah Swt.", "Agar dipuji guru dan orang tua", "Supaya terlihat paling saleh di kelas", "Hanya untuk menggugurkan kewajiban absensi"], a: 0, exp: "Keikhlasan niat hanya karena Allah adalah kunci diterimanya salat dan zikir." },
+        { q: "Ketika salat Zuhur berjamaah, imam membaca ayat sajdah lalu langsung bersujud tilawah. Tindakan makmum yang benar adalah...", opts: ["Ikut bersujud tilawah bersama imam lalu berdiri melanjutkan salat", "Tetap berdiri menunggu imam bangun", "Langsung mengakhiri salat dengan salam", "Mengucapkan istigfar berulang kali"], a: 0, exp: "Makmum wajib mengikuti gerakan imam termasuk saat imam sujud tilawah." },
+        { q: "Rina membaca Al-Qur'an di luar salat dan sampai pada Q.S. al-'Alaq ayat 19. Urutan sujud tilawah yang benar adalah...", opts: ["Berdiri menghadap kiblat, niat, takbiratul ihram, sujud 1 kali, duduk sejenak, salam", "Langsung sujud 2 kali tanpa niat", "Duduk tasyahud awal lalu sujud 1 kali", "Rukuk terlebih dahulu lalu sujud 2 kali"], a: 0, exp: "Sujud tilawah di luar salat diawali niat dan takbiratul ihram, sujud 1 kali, duduk, lalu salam." },
+        { q: "Budi selamat dari kecelakaan sepeda di persimpangan jalan tanpa luka sedikit pun. Sujud yang disunahkan baginya adalah...", opts: ["Sujud syukur", "Sujud sahwi", "Sujud tilawah", "Sujud rukun"], a: 0, exp: "Terhindar dari bahaya atau musibah merupakan salah satu sebab disunahkannya sujud syukur." },
+        { q: "Saat menerima pengumuman lolos seleksi tim olimpiade tingkat kabupaten, sikap sunah yang dianjurkan bagi siswa muslim adalah...", opts: ["Melaksanakan sujud syukur menghadap kiblat", "Melaksanakan sujud sahwi dua kali", "Melaksanakan sujud tilawah", "Mengadakan pesta berlebihan"], a: 0, exp: "Mendapat nikmat atau kabar gembira adalah sebab disunahkannya sujud syukur." },
+        { q: "Saat salat Magrib, Laila lupa tidak melakukan tasyahud awal dan sudah terlanjur berdiri tegak pada rakaat ketiga. Tindakan yang tepat adalah...", opts: ["Melanjutkan salat hingga tasyahud akhir lalu sujud sahwi 2 kali sebelum salam", "Langsung duduk kembali untuk tasyahud awal", "Membatalkan salat dan mengulang dari awal", "Menambah satu rakaat lagi"], a: 0, exp: "Jika sudah berdiri tegak, teruskan salat lalu lakukan sujud sahwi 2 kali sebelum salam." },
+        { q: "Dalam kisah Raja Iskandar Zulkarnain yang membangun benteng besi sangat kokoh, hikmah yang berkaitan dengan materi sujud adalah...", opts: ["Tetap rendah hati dan mengakui keberhasilan semata-mata rahmat Allah", "Membanggakan kehebatan teknologi diri sendiri", "Merasa paling berkuasa di bumi", "Meremehkan orang lain yang lemah"], a: 0, exp: "Sujud melatih kerendahan hati dan menjauhkan sifat sombong atau takabur." },
+        { q: "Syarat sah melaksanakan sujud tilawah di luar salat adalah...", opts: ["Suci dari hadas dan najis, menghadap kiblat, dan menutup aurat", "Harus dilaksanakan di dalam masjid besar", "Wajib membaca surah al-Fatihah dahulu", "Harus dilakukan bersama imam"], a: 0, exp: "Sujud tilawah mensyaratkan suci dari hadas/najis, menghadap kiblat, dan menutup aurat." },
+        { q: "Surah dalam Al-Qur'an yang memiliki dua ayat sajdah sekaligus adalah...", opts: ["Q.S. al-Hajj", "Q.S. al-Baqarah", "Q.S. al-Mulk", "Q.S. al-'Alaq"], a: 0, exp: "Q.S. al-Hajj memiliki dua ayat sajdah, yaitu ayat 18 dan ayat 77." },
+        { q: "Jika seseorang teringat bahwa jumlah rakaat salat Isyanya baru tiga rakaat sebelum salam, maka langkah yang harus ia lakukan adalah...", opts: ["Segera berdiri menambah 1 rakaat lagi lalu sujud sahwi sebelum salam", "Langsung salam saja karena sudah tasyahud akhir", "Mengulang salat Isya dari rakaat pertama", "Cukup membaca istigfar tanpa sujud sahwi"], a: 0, exp: "Kekurangan rakaat wajib dilengkapi terlebih dahulu, kemudian ditutup dengan sujud sahwi." },
+        { q: "Hikmah utama melaksanakan sujud sahwi dalam kehidupan bermasyarakat adalah...", opts: ["Menyadari manusia tidak sempurna dan mau segera meminta maaf bila berbuat salah", "Menunjukkan salat kita paling lama", "Menghindari kewajiban salat berjamaah", "Menghapus semua kewajiban zakat"], a: 0, exp: "Sujud sahwi menyadarkan bahwa manusia tempat salah dan lupa sehingga mudah introspeksi dan memaafkan." }
       ],
+
+      /* ==================== 10 SOAL SPOT DALAM HOTS (+4 POIN) ==================== */
       dalam: [
-        { q: "Di era media sosial, banyak konten keagamaan yang saling bertentangan dan membuat pelajar bingung menentukan mana yang benar. Berdasarkan Q.S. an-Nisa'/4: 59 dan Q.S. an-Nahl/16: 64, langkah paling tepat untuk menyikapi perbedaan pendapat tersebut adalah...", opts: ["Mengembalikan persoalan kepada Al-Qur'an dan Hadis serta berkonsultasi dengan guru/ulama terpercaya", "Memilih pendapat yang paling banyak disukai warganet", "Menghindari semua diskusi agama agar tidak pusing", "Membela pendapat teman dekat tanpa memeriksa dalilnya"], a: 0, exp: "Q.S. an-Nisa'/4: 59 memerintahkan mengembalikan perselisihan kepada Allah (Al-Qur'an) dan Rasul (Hadis)." },
-        { q: "Sebuah aturan sekolah melarang siswa membawa ponsel saat ujian demi kejujuran. Namun seorang siswa berdalih aturan itu tidak tertulis secara eksplisit dalam Al-Qur'an. Evaluasi yang tepat terhadap sikap siswa tersebut menurut Q.S. an-Nisa'/4: 59 adalah...", opts: ["Keliru, karena menaati kebijakan baik dari Ulil Amri (sekolah) yang mendukung kejujuran adalah wajib", "Benar, karena hanya aturan yang tertulis di Al-Qur'an yang wajib ditaati", "Benar, selama siswa tersebut tidak menyontek", "Keliru, karena membawa ponsel selalu haram hukumnya"], a: 0, exp: "Sekolah adalah Ulil Amri bagi siswa; selama kebijakannya baik dan tidak maksiat, wajib ditaati." },
-        { q: "Perhatikan pernyataan: (1) Al-Qur'an memerintahkan zakat secara umum; (2) Hadis menjelaskan kadar zakat fitrah 1 sha'. Hubungan logis antara keduanya menunjukkan bahwa tanpa hadis, umat Islam akan...", opts: ["Kesulitan mempraktikkan rincian teknis ibadah yang diperintahkan Al-Qur'an", "Tetap bisa mengetahui semua rincian zakat dari akal saja", "Tidak perlu mengeluarkan zakat fitrah", "Boleh mengganti hukum Al-Qur'an sesuka hati"], a: 0, exp: "Hadis berfungsi sebagai Bayan at-Tafsir dan Bayan at-Tasyri' yang memerinci pelaksanaan ajaran Al-Qur'an." },
-        { q: "Dua kelompok OSIS berdebat keras mengenai konsep acara Maulid Nabi hingga suasana rapat memanas. Sebagai ketua OSIS yang mengamalkan nilai Q.S. an-Nisa'/4: 59, keputusan terbaikmu adalah...", opts: ["Menengahi secara objektif, mendengar argumen kedua pihak, lalu menyepakati solusi yang paling maslahat", "Memenangkan kelompok yang paling vokal agar rapat cepat selesai", "Membubarkan kepanitiaan tanpa musyawarah", "Membiarkan mereka berdebat sampai salah satu mengalah"], a: 0, exp: "Pemimpin bijaksana mencari titik temu secara adil demi kemaslahatan bersama." },
-        { q: "Mengapa Al-Qur'an tetap relevan menjadi pedoman hidup di abad ke-21 meski diturunkan lebih dari 14 abad lalu?", opts: ["Karena ajaran dan nilai moralnya bersifat universal serta menjadi pembeda hak dan batil di segala zaman", "Karena bahasanya selalu diubah mengikuti tren zaman", "Karena hanya mengatur urusan ibadah ritual saja", "Karena tidak memerlukan penafsiran ulama"], a: 0, exp: "Al-Qur'an bersifat universal, hudan (petunjuk), dan furqan (pembeda) yang relevan sepanjang masa." },
-        { q: "Seorang ilmuwan berhasil menciptakan teknologi kecerdasan buatan yang sangat canggih, lalu ia merasa ilmunya sudah menandingi segalanya. Jika dianalisis dengan makna Al-'Alim (Q.S. al-An'am/6: 59), kekeliruan ilmuwan tersebut adalah...", opts: ["Melupakan bahwa ilmu manusia sangat terbatas dan hanya anugerah kecil dibandingkan ilmu Allah yang meliputi segala sesuatu", "Tidak boleh menciptakan teknologi modern dalam Islam", "Ilmu pengetahuan bertentangan dengan keimanan", "Teknologi hanya boleh dibuat oleh ulama"], a: 0, exp: "Ilmu manusia ibarat setetes tinta di lautan dibandingkan ilmu Allah Yang Maha Luas (Al-'Alim)." },
-        { q: "Di sebuah kelas, siswa A diam-diam menyebarkan rumor negatif tentang siswa B melalui akun anonim sehingga tidak ada yang tahu pelakunya. Analisis perilaku siswa A ditinjau dari keimanan kepada Al-Basir dan Al-Khabir adalah...", opts: ["Ia gagal menumbuhkan sikap muraqabah karena merasa aman dari pengawasan manusia, padahal Allah melihat dan mengetahui detail perbuatannya", "Perbuatannya aman selama identitas akunnya tidak terlacak", "Ia hanya melanggar tata tertib sekolah, bukan nilai akidah", "Sikapnya wajar karena dilakukan di dunia maya"], a: 0, exp: "Iman kepada Al-Basir dan Al-Khabir menumbuhkan muraqabah: sadar Allah melihat hal tersembunyi sekalipun." },
-        { q: "Bagaimana cara terbaik seorang pelajar SMP mengintegrasikan keteladanan sifat Al-'Alim dan Al-Khabir saat mengerjakan tugas makalah kelompok?", opts: ["Mencari referensi terpercaya secara tekun, memverifikasi kebenaran data dengan teliti, lalu berbagi pemahaman kepada teman", "Menyalin langsung dari internet tanpa membaca isinya agar cepat selesai", "Menyerahkan seluruh tugas kepada ketua kelompok", "Membuat data sendiri agar terlihat keren"], a: 0, exp: "Al-'Alim mendorong ketekunan mencari ilmu, sedangkan Al-Khabir menuntut ketelitian memverifikasi informasi." },
-        { q: "Nadia mendengar bisikan teman-temannya yang merencanakan perundungan terhadap siswa baru. Sebagai pelajar yang meneladani sifat As-Sami' dan Al-Basir, tindakan paling bijak bagi Nadia adalah...", opts: ["Mengingatkan teman-temannya dengan santun atau melapor kepada guru BK agar perundungan dapat dicegah", "Pura-pura tidak mendengar agar tidak dimusuhi", "Ikut merekam kejadian untuk diunggah ke media sosial", "Menertawakan rencana tersebut"], a: 0, exp: "Pendengar yang baik dan peka terhadap kebaikan akan mencegah kemungkaran secara bijak." },
-        { q: "Seorang siswa sangat cerdas dan selalu juara kelas, tetapi ia enggan membantu temannya yang kesulitan memahami pelajaran karena takut tersaingi. Jika dievaluasi berdasarkan Bab 2, nilai Asmaul Husna apa yang belum ia amalkan?", opts: ["Ikhlas berbagi ilmu sebagai cerminan Al-Khabir dan rendah hati atas ilmu sebagai cerminan Al-'Alim", "Sifat As-Sami' karena tidak mau mendengarkan musik", "Sifat Al-Basir karena tidak memakai kacamata", "Tidak ada, karena prestasi adalah urusan pribadi"], a: 0, exp: "Ilmu adalah anugerah Allah (Al-'Alim) yang hendaknya dibagikan dengan ikhlas (Al-Khabir)." },
-        { q: "Arif rajin melaksanakan salat lima waktu setiap hari, namun ia masih sering berkata kasar dan menyontek saat ulangan. Berdasarkan Q.S. al-'Ankabut/29: 45 dan hadis riwayat Ibnu Jarir, akar masalah dari kondisi Arif adalah...", opts: ["Salatnya baru sebatas rutinitas fisik tanpa penghayatan makna, kekhusyukan, dan kesadaran diawasi Allah", "Salat memang tidak ada hubungannya dengan akhlak sehari-hari", "Arif terlalu banyak melaksanakan salat sunah", "Salat lima waktu tidak sah bagi pelajar"], a: 0, exp: "Salat yang khusyuk dan dihayati maknanya akan membentengi diri dari perbuatan keji dan mungkar." },
-        { q: "Mengapa Allah Swt. mengancam orang yang salat dalam Q.S. al-Ma'un/107: 4–7 dengan sebutan 'celaka'?", opts: ["Karena mereka lalai terhadap salatnya, melakukannya karena ria (ingin dipuji), dan enggan menolong sesama", "Karena mereka salat terlalu cepat di masjid", "Karena mereka tidak hafal seluruh Al-Qur'an", "Karena mereka salat sendirian di rumah"], a: 0, exp: "Q.S. al-Ma'un/107: 4-7 mencela orang yang lalai salat, berbuat ria, dan enggan memberi bantuan." },
-        { q: "Sahabat Nabi bernama 'Urwah bin Zubair meminta kakinya yang sakit parah diamputasi saat ia sedang salat, dan ia tidak merasakan sakit. Pelajaran terdalam yang dapat ditarik pelajar dari kisah ini adalah...", opts: ["Kekhusyukan sejati memusatkan seluruh hati dan pikiran hanya kepada Allah sehingga melampaui gangguan duniawi", "Salat dapat menggantikan obat bius di rumah sakit", "Kita harus selalu salat selama berjam-jam", "Orang sakit tidak boleh berobat ke dokter"], a: 0, exp: "Kisah 'Urwah bin Zubair menunjukkan dahsyatnya fokus dan kekhusyukan hati saat menghadap Allah." },
-        { q: "Seseorang mengeluh hidupnya selalu gelisah dan mudah marah meski fasilitas dunianya serba cukup. Solusi islami paling tepat berdasarkan materi Bab 3 adalah...", opts: ["Memperbaiki kualitas salat lima waktu secara tepat waktu dan membiasakan zikir untuk menenangkan hati", "Menambah jadwal hiburan semalam suntuk", "Menjauhi pergaulan dengan semua orang", "Tidur sepanjang hari agar lupa masalah"], a: 0, exp: "Salat dan zikir menumbuhkan ketenangan jiwa, kesabaran, dan kedekatan dengan Allah Swt." },
-        { q: "Analisis perbedaan dampak antara orang yang salat berjamaah dengan orang yang sering menunda salat hingga akhir waktu adalah...", opts: ["Salat berjamaah melatih disiplin, mempererat ukhuwah, dan melipatgandakan pahala; menunda salat memicu kelalaian", "Keduanya memiliki dampak sosial yang sama persis", "Menunda salat lebih melatih kesabaran", "Salat berjamaah hanya wajib bagi orang dewasa"], a: 0, exp: "Salat berjamaah di awal waktu membentuk kedisiplinan dan mempererat silaturahmi." },
-        { q: "Ketika salat Asar sendirian, Dani ragu apakah ia sudah mengerjakan 3 rakaat atau 4 rakaat. Berdasarkan hadis riwayat Muslim dari Abu Sa'id al-Khudri, langkah paling tepat yang harus dilakukan Dani adalah...", opts: ["Mengambil jumlah yang paling diyakini (3 rakaat), menambah 1 rakaat lagi, lalu sujud sahwi 2 kali sebelum salam", "Menganggap sudah 4 rakaat agar cepat selesai", "Langsung salam lalu mengulang salat dari awal", "Melakukan sujud syukur setelah salam"], a: 0, exp: "Jika ragu jumlah rakaat, buang keraguan dengan mengambil yang pasti (jumlah lebih sedikit), lengkapi, lalu sujud sahwi." },
-        { q: "Di tengah pertandingan futsal sekolah, tim kelas 7C mencetak gol kemenangan lalu seluruh pemain langsung melakukan sujud syukur di lapangan yang bersih menghadap kiblat. Evaluasi terhadap tindakan tersebut adalah...", opts: ["Terpuji dan sesuai sunah, karena sujud syukur dilakukan segera saat menerima nikmat dengan adab yang benar", "Tidak sah karena harus dilakukan di dalam masjid", "Makruh karena dilihat banyak penonton", "Harus diganti dengan sujud sahwi"], a: 0, exp: "Sujud syukur disunahkan dilakukan seketika saat memperoleh kabar gembira/nikmat dengan menghadap kiblat." },
-        { q: "Saat salat Subuh berjamaah, imam membaca surah as-Sajdah ayat 15 namun imam tidak melakukan sujud tilawah dan tetap melanjutkan bacaan. Makmum di belakang merasa tahu itu ayat sajdah lalu ia bersujud sendiri. Penilaian fikih terhadap tindakan makmum tersebut adalah...", opts: ["Keliru, karena sujud tilawah hukumnya sunah sedangkan mengikuti imam dalam salat berjamaah adalah wajib", "Benar, karena setiap ayat sajdah wajib disujudi sendiri", "Benar, agar imam sadar kesalahannya", "Batal salatnya imam"], a: 0, exp: "Makmum wajib mengikuti imam; jika imam tidak sujud tilawah, makmum tidak boleh sujud sendiri." },
-        { q: "Seorang siswa sedang berada di dalam bus yang penuh sesak saat mendengar lantunan ayat sajdah dari audio murottal. Ia ingin meraih keutamaan sujud tilawah namun tidak memungkinkan bersujud. Solusi terbaiknya adalah...", opts: ["Membaca zikir tasbih, tahmid, tahlil, dan takbir (Subhanallah walhamdulillah wa la ilaha illallah wallahu akbar)", "Memaksa bersujud di lorong bus meski berbahaya", "Mematikan audio murottal dengan marah", "Menggantinya dengan sujud sahwi saat tiba di rumah"], a: 0, exp: "Jika kondisi tidak memungkinkan sujud tilawah, dapat diganti dengan bacaan zikir tasbih-tahmid-tahlil-takbir." },
-        { q: "Bandingkan hikmah utama antara sujud sahwi dan sujud syukur dalam membentuk karakter pelajar Pancasila:", opts: ["Sujud sahwi menumbuhkan kesadaran bahwa manusia tempat salah dan mau introspeksi; sujud syukur melatih rendah hati dan pandai berterima kasih", "Keduanya hanya berfungsi menambah gerakan olahraga", "Sujud sahwi untuk orang pelupa saja; sujud syukur untuk orang kaya saja", "Sujud sahwi menghapus dosa besar; sujud syukur menggantikan salat wajib"], a: 0, exp: "Sujud sahwi mengajarkan kerendahan hati mengakui kekhilafan, sedangkan sujud syukur menumbuhkan rasa terima kasih." },
-        { q: "Mengapa Islam menetapkan bahwa seseorang yang tidak melakukan sujud syukur saat mendapat kabar gembira tidak dianggap berdosa?", opts: ["Karena hukum sujud syukur adalah sunah, meski ia kehilangan kesempatan meraih pahala tambahan", "Karena rasa syukur tidak penting dalam Islam", "Karena sujud syukur hanya berlaku pada zaman Nabi", "Karena cukup diucapkan dalam hati saja"], a: 0, exp: "Sujud syukur hukumnya sunah; dikerjakan berpahala, ditinggalkan tidak berdosa namun rugi kehilangan pahala." },
-        { q: "Dalam salat berjamaah, imam lupa tidak duduk tasyahud awal dan langsung berdiri untuk rakaat ketiga. Makmum laki-laki mengucapkan 'Subhanallah' namun imam sudah berdiri tegak sempurna. Tindakan tepat bagi imam adalah...", opts: ["Tetap melanjutkan rakaat ketiga dan melakukan sujud sahwi dua kali sebelum salam", "Duduk kembali ke tasyahud awal demi menuruti makmum", "Membatalkan salat berjamaah", "Menyuruh makmum menggantikan posisi imam"], a: 0, exp: "Jika imam sudah berdiri sempurna, jangan kembali duduk; lanjutkan salat dan lakukan sujud sahwi sebelum salam." },
-        { q: "Hubungkan antara keteraturan salat lima waktu dengan pembentukan karakter disiplin seorang siswa di sekolah:", opts: ["Salat melatih manajemen waktu yang ketat dan tanggung jawab tepat waktu, sehingga siswa terbiasa disiplin dalam tugas dan tata tertib", "Salat hanya melatih hafalan bahasa Arab", "Siswa yang salat pasti langsung mendapat nilai 100 tanpa belajar", "Salat membuat siswa tidak sempat bermain"], a: 0, exp: "Ketepatan waktu salat fardu melatih disiplin diri yang terbawa ke aktivitas belajar dan kehidupan sosial." },
-        { q: "Mengapa Islam melarang umatnya menaati perintah pemimpin yang bertentangan dengan Al-Qur'an dan Hadis?", opts: ["Karena ketaatan mutlak hanya milik Allah dan Rasul-Nya, sedangkan ketaatan kepada makhluk dibatasi pada kebaikan", "Karena pemimpin tidak perlu dihormati", "Karena setiap orang bebas membuat aturan sendiri", "Karena pemimpin selalu berbuat salah"], a: 0, exp: "Sesuai hadis riwayat Ahmad: tidak ada ketaatan kepada makhluk dalam hal kemaksiatan kepada Sang Pencipta." },
-        { q: "Seorang siswa mendapat juara 1 lomba kaligrafi tingkat kota. Alih-alih pamer di media sosial, ia langsung sujud syukur dan berterima kasih kepada guru pembimbingnya. Perilaku ini memadukan nilai...", opts: ["Ketundukan kepada Allah (sujud syukur), tawadu' (rendah hati), dan adab menghormati guru", "Ria dan sum'ah", "Individualisme dan kemandirian", "Ketakutan akan kegagalan"], a: 0, exp: "Sujud syukur menjaga hati tetap tawadu' dan mengakui peran Allah serta jasa guru." }
+        { q: "Di media sosial banyak beredar potongan ceramah yang saling bertentangan sehingga pelajar bingung menentukan mana yang benar. Berdasarkan Q.S. an-Nisa'/4: 59 dan Q.S. an-Nahl/16: 64, strategi paling tepat menyikapi hal tersebut adalah...", opts: ["Mengembalikan persoalan kepada Al-Qur'an dan Hadis serta berkonsultasi dengan guru agama atau ulama terpercaya", "Mengikuti pendapat akun yang memiliki pengikut terbanyak", "Menghindari seluruh pelajaran agama agar tidak bingung", "Membela pendapat teman dekat tanpa memeriksa dalilnya"], a: 0, exp: "Q.S. an-Nisa'/4: 59 memerintahkan mengembalikan perselisihan kepada Allah (Al-Qur'an) dan Rasul (Hadis)." },
+        { q: "Sekolah menerapkan larangan membawa ponsel saat ujian demi menjaga kejujuran. Seorang siswa menolak dengan alasan aturan itu tidak tertulis dalam Al-Qur'an. Evaluasi yang tepat terhadap sikap siswa tersebut menurut Q.S. an-Nisa'/4: 59 adalah...", opts: ["Keliru, karena menaati kebijakan baik dari Ulil Amri (sekolah) yang mendukung kejujuran adalah wajib", "Benar, karena hanya aturan yang tertulis persis di Al-Qur'an yang wajib ditaati", "Benar, selama siswa tersebut berjanji tidak menyontek", "Keliru, karena menggunakan ponsel selalu haram hukumnya"], a: 0, exp: "Sekolah adalah Ulil Amri bagi siswa; selama kebijakannya baik dan tidak maksiat, wajib ditaati." },
+        { q: "Al-Qur'an memerintahkan zakat secara umum, sedangkan hadis merinci kadar zakat fitrah beserta waktu pembayarannya. Analisis hubungan keduanya menunjukkan bahwa tanpa hadis, umat Islam akan...", opts: ["Kesulitan mempraktikkan rincian teknis ibadah yang diperintahkan secara global dalam Al-Qur'an", "Tetap mudah menentukan semua rincian ibadah hanya lewat pendapat pribadi", "Tidak lagi wajib membayar zakat fitrah", "Boleh mengubah hukum Al-Qur'an sesuai selera"], a: 0, exp: "Hadis berperan sebagai Bayan at-Tafsir dan Bayan at-Tasyri' yang memerinci pelaksanaan ajaran Al-Qur'an." },
+        { q: "Seorang siswa diam-diam menyebarkan ejekan terhadap temannya memakai akun media sosial anonim sehingga merasa aman karena tidak ada yang tahu. Ditinjau dari keimanan kepada Al-Basir dan Al-Khabir, kekeliruan siswa tersebut adalah...", opts: ["Ia gagal menumbuhkan muraqabah karena merasa luput dari pengawasan manusia, padahal Allah melihat dan mengetahui detail perbuatannya", "Perbuatannya aman selama akunnya tidak bisa dilacak", "Ia hanya melanggar tata tertib sekolah, bukan nilai akidah", "Tindakannya wajar karena terjadi di dunia maya"], a: 0, exp: "Iman kepada Al-Basir dan Al-Khabir menumbuhkan kesadaran muraqabah bahwa Allah mengawasi hal tersembunyi sekalipun." },
+        { q: "Seorang ilmuwan berhasil merancang teknologi canggih lalu menyombongkan diri seolah ilmunya melampaui segalanya. Jika dievaluasi dengan kandungan Q.S. al-An'am/6: 59 tentang sifat Al-'Alim, sikap tersebut keliru karena...", opts: ["Ilmu manusia sangat terbatas ibarat setetes tinta di lautan dibandingkan ilmu Allah yang meliputi segala sesuatu", "Islam melarang manusia mengembangkan sains dan teknologi", "Ilmu pengetahuan selalu bertentangan dengan keimanan", "Hanya ulama yang boleh mempelajari teknologi"], a: 0, exp: "Sifat Al-'Alim menegaskan ilmu Allah tak terbatas, sedangkan ilmu manusia adalah anugerah kecil dari-Nya." },
+        { q: "Arif rutin mengerjakan salat lima waktu setiap hari, tetapi ia masih gemar berkata kasar dan menyontek saat ulangan. Berdasarkan Q.S. al-'Ankabut/29: 45 dan hadis riwayat Ibnu Jarir, akar persoalan dari kondisi Arif adalah...", opts: ["Salatnya baru sebatas rutinitas gerakan fisik tanpa kekhusyukan, penghayatan makna, dan kesadaran diawasi Allah", "Salat memang tidak memiliki kaitan dengan pembentukan akhlak", "Arif kurang banyak mengerjakan salat sunah", "Salat lima waktu tidak berlaku untuk mencegah menyontek"], a: 0, exp: "Salat yang khusyuk dan dihayati maknanya akan membentengi diri dari perbuatan keji dan mungkar." },
+        { q: "Sahabat Nabi bernama 'Urwah bin Zubair meminta kakinya yang sakit parah diamputasi ketika ia sedang salat, dan ia tidak merasakan sakit. Pelajaran terdalam yang dapat ditarik pelajar dari kisah tersebut adalah...", opts: ["Kekhusyukan sejati memusatkan seluruh hati dan pikiran kepada Allah sehingga mampu melampaui gangguan duniawi", "Salat dapat menggantikan seluruh fungsi obat bius medis", "Salat yang benar harus dilakukan selama berjam-jam", "Orang yang sakit parah dilarang berobat ke dokter"], a: 0, exp: "Kisah 'Urwah bin Zubair menjadi teladan luar biasa tentang kekuatan fokus dan kekhusyukan dalam salat." },
+        { q: "Saat salat Asar sendirian, Dani ragu apakah ia sudah mengerjakan 3 rakaat atau 4 rakaat. Berdasarkan hadis riwayat Muslim dari Abu Sa'id al-Khudri, keputusan paling tepat yang harus diambil Dani adalah...", opts: ["Mengambil jumlah yang paling diyakini (3 rakaat), menambah 1 rakaat lagi, lalu sujud sahwi 2 kali sebelum salam", "Menganggap sudah 4 rakaat agar salatnya cepat selesai", "Langsung salam lalu mengulang salat Asar dari awal", "Melakukan sujud syukur setelah salam"], a: 0, exp: "Saat ragu jumlah rakaat, ambil bilangan yang pasti (lebih sedikit), lengkapi rakaatnya, lalu tutup dengan sujud sahwi." },
+        { q: "Pada salat Subuh berjamaah, imam membaca ayat sajdah tetapi tidak melakukan sujud tilawah dan terus melanjutkan bacaan. Seorang makmum di saf belakang nekat bersujud tilawah sendirian. Penilaian fikih terhadap tindakan makmum tersebut adalah...", opts: ["Keliru, karena sujud tilawah hukumnya sunah sedangkan mengikuti imam dalam salat berjamaah adalah wajib", "Benar, karena setiap mendengar ayat sajdah wajib langsung bersujud sendiri", "Benar, agar imam menyadari kelalaiannya", "Salat imam menjadi batal sementara makmum sah"], a: 0, exp: "Dalam salat berjamaah, makmum wajib mengikuti imam; jika imam tidak sujud tilawah, makmum tidak boleh sujud sendiri." },
+        { q: "Seorang siswa berada di dalam bus sekolah yang penuh sesak saat mendengar lantunan ayat sajdah dari audio murottal. Ia ingin meraih keutamaan sujud tilawah namun tidak memungkinkan bersujud. Solusi terbaik sesuai ajaran Islam adalah...", opts: ["Menggantinya dengan membaca zikir tasbih, tahmid, tahlil, dan takbir (Subhanallah walhamdulillah wa la ilaha illallah wallahu akbar)", "Memaksa bersujud di lorong bus meski membahayakan keselamatan", "Mematikan audio murottal dengan kesal", "Menggantinya dengan sujud sahwi saat tiba di rumah"], a: 0, exp: "Ketika kondisi tidak memungkinkan sujud tilawah, muslim dapat menggantinya dengan zikir tasbih-tahmid-tahlil-takbir." }
       ],
+
+      /* ==================== 7 SOAL SPOT RARE KHUSUS TEKS ARAB (+5 POIN) ==================== */
       rare: [
-        { q: "Perhatikan potongan Q.S. an-Nisa'/4: 59 di atas! Hukum bacaan pada lafal tersebut adalah...", ar: "الرَّسُوْلَ", opts: ["Alif Lam Syamsiyyah", "Alif Lam Qamariyyah", "Idgam Bigunnah", "Iqlab"], a: 0, exp: "Alif Lam bertemu huruf Ra (ر) bertasydid, sehingga dibaca lebur (Alif Lam Syamsiyyah)." },
-        { q: "Hukum bacaan Alif Lam pada lafal dari Q.S. an-Nisa'/4: 59 di atas adalah...", ar: "الْأَمْرِ", opts: ["Alif Lam Qamariyyah", "Alif Lam Syamsiyyah", "Ikhfa' Haqiqi", "Qalqalah Sugra"], a: 0, exp: "Alif Lam bertemu huruf Alif/Hamzah (أ), suara Lam dibaca jelas (Alif Lam Qamariyyah)." },
-        { q: "Arti dari potongan ayat Q.S. an-Nisa'/4: 59 di atas adalah...", ar: "أَطِيْعُوا اللهَ", opts: ["Taatilah Allah", "Taatilah Rasul", "Dan pemegang kekuasaan", "Jika kamu berbeda pendapat"], a: 0, exp: "Athi'ullaha berarti 'Taatilah Allah'." },
-        { q: "Arti dari potongan ayat Q.S. an-Nisa'/4: 59 di atas adalah...", ar: "وَأُولِي الْأَمْرِ مِنْكُمْ", opts: ["Dan Ulil Amri (pemegang kekuasaan) di antara kamu", "Dan taatilah Rasul-Nya", "Maka kembalikanlah kepada Allah", "Yang demikian itu lebih utama"], a: 0, exp: "Wa ulil amri minkum berarti 'dan pemegang kekuasaan di antara kamu'." },
-        { q: "Lanjutan yang tepat untuk potongan Q.S. an-Nisa'/4: 59 di atas adalah...", ar: "فَإِنْ تَنَازَعْتُمْ فِي شَيْءٍ ...", opts: ["فَرُدُّوْهُ إِلَى اللهِ وَالرَّسُوْلِ", "ذٰلِكَ خَيْرٌ وَأَحْسَنُ تَأْوِيْلًا", "وَأَطِيْعُوا الرَّسُوْلَ", "وَهُدًى وَرَحْمَةً لِقَوْمٍ يُؤْمِنُوْنَ"], a: 0, exp: "Setelah 'fa in tanaza'tum fi syai'in' lanjutannya adalah 'farudduhu ilallahi war-rasul'." },
-        { q: "Arti dari potongan Q.S. an-Nisa'/4: 59 di atas adalah...", ar: "بِاللهِ وَالْيَوْمِ الْآخِرِ", opts: ["Kepada Allah dan hari kemudian (akhir)", "Kepada kitab dan para rasul", "Di dunia dan di akhirat", "Dengan ilmu dan hikmah"], a: 0, exp: "Billahi wal-yaumil akhir berarti 'kepada Allah dan hari kemudian'." },
-        { q: "Hukum bacaan Alif Lam pada lafal dari Q.S. an-Nahl/16: 64 di atas adalah...", ar: "الْكِتٰبَ", opts: ["Alif Lam Qamariyyah", "Alif Lam Syamsiyyah", "Idgam Bilagunnah", "Izhar Syafawi"], a: 0, exp: "Alif Lam bertemu huruf Kaf (ك) dibaca jelas (Alif Lam Qamariyyah)." },
-        { q: "Arti dari potongan Q.S. an-Nahl/16: 64 di atas adalah...", ar: "وَهُدًى وَرَحْمَةً لِقَوْمٍ يُؤْمِنُوْنَ", opts: ["Serta menjadi petunjuk dan rahmat bagi orang-orang yang beriman", "Agar engkau menjelaskan apa yang mereka perselisihkan", "Dan Kami tidak menurunkan Kitab ini", "Yang demikian itu lebih baik akibatnya"], a: 0, exp: "Wa hudan wa rahmatan liqaumin yu'minun berarti petunjuk dan rahmat bagi kaum beriman." },
-        { q: "Hukum bacaan Alif Lam pada lafal di atas adalah...", ar: "الشَّيْطٰنُ", opts: ["Alif Lam Syamsiyyah", "Alif Lam Qamariyyah", "Izhar Halqi", "Mad Wajib"], a: 0, exp: "Alif Lam bertemu huruf Syin (ش) bertasydid adalah Alif Lam Syamsiyyah." },
-        { q: "Hukum bacaan Alif Lam pada lafal di atas adalah...", ar: "الْخَمْرِ", opts: ["Alif Lam Qamariyyah", "Alif Lam Syamsiyyah", "Idgam Mimi", "Ikhfa' Syafawi"], a: 0, exp: "Alif Lam bertemu huruf Kha (خ) dibaca jelas (Alif Lam Qamariyyah)." },
-        { q: "Hukum bacaan Alif Lam pada lafal di atas adalah...", ar: "النَّعِيْمِ", opts: ["Alif Lam Syamsiyyah", "Alif Lam Qamariyyah", "Izhar Qamariyyah", "Qalqalah Kubra"], a: 0, exp: "Alif Lam bertemu huruf Nun (ن) bertasydid adalah Alif Lam Syamsiyyah." },
-        { q: "Hukum bacaan Alif Lam pada lafal di atas adalah...", ar: "الْمُشْرِكِيْنَ", opts: ["Alif Lam Qamariyyah", "Alif Lam Syamsiyyah", "Idgam Syamsiyyah", "Gunnah"], a: 0, exp: "Alif Lam bertemu huruf Mim (م) dibaca jelas (Alif Lam Qamariyyah)." },
-        { q: "Potongan Q.S. al-A'raf/7: 180 di atas menegaskan bahwa Allah memiliki...", ar: "وَلِلّٰهِ الْأَسْمَاۤءُ الْحُسْنٰى فَادْعُوْهُ بِهَا", opts: ["Al-Asma' al-Husna (nama-nama terbaik), maka berdoalah dengan menyebutnya", "Kerajaan langit dan bumi", "Para malaikat yang selalu taat", "Kitab-kitab yang diturunkan kepada nabi"], a: 0, exp: "Ayat ini memerintahkan berdoa kepada Allah dengan menyebut Al-Asma' al-Husna." },
-        { q: "Akhir Q.S. al-Mulk/67: 14 di atas menunjukkan bahwa Allah Swt. memiliki sifat...", ar: "وَهُوَ اللَّطِيْفُ الْخَبِيْرُ", opts: ["Maha Halus lagi Maha Mengetahui/Teliti (Al-Khabir)", "Maha Mendengar lagi Maha Melihat", "Maha Pengampun lagi Maha Penyayang", "Maha Kuasa lagi Maha Bijaksana"], a: 0, exp: "Al-Latiful Khabir berarti Allah Maha Halus lagi Maha Mengetahui/Teliti." },
-        { q: "Akhir Q.S. al-Baqarah/2: 137 di atas menyebut dua Asmaul Husna, yaitu...", ar: "وَهُوَ السَّمِيْعُ الْعَلِيْمُ", opts: ["As-Sami' (Maha Mendengar) dan Al-'Alim (Maha Mengetahui)", "Al-Basir dan Al-Khabir", "Ar-Rahman dan Ar-Rahim", "Al-Malik dan Al-Quddus"], a: 0, exp: "As-Sami'ul 'Alim berarti Maha Mendengar lagi Maha Mengetahui." },
-        { q: "Akhir Q.S. al-Isra'/17: 1 di atas menyebut dua Asmaul Husna, yaitu...", ar: "إِنَّهُ هُوَ السَّمِيْعُ الْبَصِيْرُ", opts: ["As-Sami' (Maha Mendengar) dan Al-Basir (Maha Melihat)", "Al-'Alim dan Al-Khabir", "Al-Aziz dan Al-Hakim", "As-Sami' dan Al-'Alim"], a: 0, exp: "As-Sami'ul Basir berarti Maha Mendengar lagi Maha Melihat." },
-        { q: "Potongan Q.S. al-An'am/6: 80 di atas bermakna...", ar: "وَسِعَ رَبِّيْ كُلَّ شَيْءٍ عِلْمًا", opts: ["Ilmu Tuhanku meliputi segala sesuatu", "Penglihatan Tuhanku menembus langit", "Pendengaran Tuhanku tanpa batas", "Rahmat Tuhanku sangat luas"], a: 0, exp: "Wasi'a rabbi kulla syai'in 'ilman berarti ilmu Tuhanku meliputi segala sesuatu (dalil Al-'Alim)." },
-        { q: "Arti potongan Q.S. al-'Ankabut/29: 45 di atas adalah...", ar: "إِنَّ الصَّلٰوةَ تَنْهٰى عَنِ الْفَحْشَاۤءِ وَالْمُنْكَرِ", opts: ["Sesungguhnya salat itu mencegah dari perbuatan keji dan mungkar", "Dirikanlah salat dan tunaikanlah zakat", "Sesungguhnya salat adalah tiang agama", "Berzikirlah kepada Allah sebanyak-banyaknya"], a: 0, exp: "Ayat ini menegaskan fungsi utama salat mencegah perbuatan keji (fahsya') dan mungkar." },
-        { q: "Perintah yang terkandung pada Q.S. al-Ahzab/33: 41 di atas adalah...", ar: "اذْكُرُوا اللهَ ذِكْرًا كَثِيْرًا", opts: ["Berzikirlah kepada Allah dengan zikir yang sebanyak-banyaknya", "Taatilah Allah dan Rasul-Nya", "Bertakwalah dengan sebenar-benar takwa", "Bersujudlah hanya kepada Allah"], a: 0, exp: "Uzkurullaha zikran kasira berarti berzikirlah kepada Allah sebanyak-banyaknya." },
-        { q: "Lafal zikir di atas disebut bacaan...", ar: "لَا إِلٰهَ إِلَّا اللهُ", opts: ["Tahlil", "Tasbih", "Tahmid", "Takbir"], a: 0, exp: "La ilaha illallah disebut bacaan Tahlil." },
-        { q: "Lafal di atas merupakan bacaan ketika melaksanakan sujud...", ar: "سُبْحَانَ مَنْ لَا يَنَامُ وَلَا يَسْهُوْ", opts: ["Sujud sahwi", "Sujud syukur", "Sujud tilawah", "Sujud rukun salat"], a: 0, exp: "Subhana man la yanamu wa la yashu (Maha Suci Allah yang tidak tidur dan tidak lupa) adalah doa sujud sahwi." },
-        { q: "Arti dari doa sujud sahwi di atas adalah...", ar: "سُبْحَانَ مَنْ لَا يَنَامُ وَلَا يَسْهُوْ", opts: ["Maha Suci Allah yang tidak tidur dan tidak lupa", "Maha Suci Allah dan segala puji bagi-Nya", "Wajahku bersujud kepada Zat yang menciptakannya", "Ya Allah ampunilah segala kesalahanku"], a: 0, exp: "La yanamu = tidak tidur, wa la yashu = dan tidak lupa." },
-        { q: "Lafal di atas merupakan bacaan utama ketika melaksanakan sujud...", ar: "سَجَدَ وَجْهِيَ لِلَّذِيْ خَلَقَهُ وَصَوَّرَهُ", opts: ["Sujud tilawah", "Sujud sahwi", "Sujud syukur", "Duduk di antara dua sujud"], a: 0, exp: "Sajada wajhiya lillazi khalaqahu wa shawwarahu... adalah doa sujud tilawah." },
-        { q: "Lafal di atas biasa dibaca ketika melaksanakan sujud...", ar: "سُبْحَانَ اللهِ وَالْحَمْدُ لِلّٰهِ وَلَا إِلٰهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ", opts: ["Sujud syukur (dan zikir pengganti tilawah)", "Sujud sahwi saja", "Takbiratul ihram", "Tasyahud akhir"], a: 0, exp: "Bacaan tasbih-tahmid-tahlil-takbir ini dibaca pada sujud syukur atau zikir pengganti sujud tilawah." },
-        { q: "Hukum bacaan Alif Lam pada kata terakhir dalam Q.S. al-Baqarah/2: 186 di atas adalah...", ar: "الضَّالِّيْنَ", opts: ["Alif Lam Syamsiyyah", "Alif Lam Qamariyyah", "Izhar Qamariyyah", "Iqlab"], a: 0, exp: "Alif Lam bertemu huruf Dad (ض) bertasydid adalah Alif Lam Syamsiyyah." }
+        { q: "Perhatikan potongan Q.S. an-Nisa'/4: 59 di atas! Arti yang tepat dari penggalan ayat tersebut adalah...", ar: "وَأُولِي الْأَمْرِ مِنْكُمْ", opts: ["Dan Ulil Amri (pemegang kekuasaan) di antara kamu", "Taatilah Allah dan taatilah Rasul-Nya", "Jika kamu berbeda pendapat tentang sesuatu", "Yang demikian itu lebih utama dan lebih baik akibatnya"], a: 0, exp: "Wa ulil amri minkum berarti 'dan pemegang kekuasaan (pemimpin) di antara kamu'." },
+        { q: "Perhatikan potongan Q.S. an-Nahl/16: 64 di atas! Arti yang tepat dari penggalan ayat tersebut adalah...", ar: "وَهُدًى وَرَحْمَةً لِقَوْمٍ يُؤْمِنُوْنَ", opts: ["Serta menjadi petunjuk dan rahmat bagi orang-orang yang beriman", "Agar engkau dapat menjelaskan apa yang mereka perselisihkan", "Dan Kami tidak menurunkan Kitab ini kepadamu", "Kembalikanlah kepada Allah dan Rasul-Nya"], a: 0, exp: "Wa hudan wa rahmatan liqaumin yu'minun artinya petunjuk dan rahmat bagi kaum yang beriman." },
+        { q: "Hukum bacaan Alif Lam pada lafal dari Q.S. an-Nisa'/4: 59 di atas adalah...", ar: "الرَّسُوْلَ", opts: ["Alif Lam Syamsiyyah (Idgam Syamsiyyah)", "Alif Lam Qamariyyah (Izhar Qamariyyah)", "Idgam Bigunnah", "Ikhfa' Haqiqi"], a: 0, exp: "Alif Lam bertemu huruf Ra (ر) bertasydid sehingga suara Lam melebur (Alif Lam Syamsiyyah)." },
+        { q: "Hukum bacaan Alif Lam pada lafal dari Q.S. an-Nahl/16: 64 di atas adalah...", ar: "الْكِتٰبَ", opts: ["Alif Lam Qamariyyah (Izhar Qamariyyah)", "Alif Lam Syamsiyyah (Idgam Syamsiyyah)", "Idgam Bilagunnah", "Gunnah"], a: 0, exp: "Alif Lam bertemu huruf Kaf (ك) sehingga suara Lam dibaca jelas (Alif Lam Qamariyyah)." },
+        { q: "Potongan Q.S. al-Mulk/67: 14 di atas menunjukkan bahwa Allah Swt. memiliki Al-Asma' al-Husna...", ar: "وَهُوَ اللَّطِيْفُ الْخَبِيْرُ", opts: ["Al-Khabir (Maha Teliti / Maha Memberitahu)", "As-Sami' (Maha Mendengar)", "Al-Basir (Maha Melihat)", "Al-Malik (Maha Merajai)"], a: 0, exp: "Lafal Al-Khabir pada akhir Q.S. al-Mulk/67: 14 menegaskan Allah Maha Teliti lagi Maha Memberitahu." },
+        { q: "Lafal bacaan Arab di atas dibaca ketika seseorang melaksanakan...", ar: "سُبْحَانَ مَنْ لَا يَنَامُ وَلَا يَسْهُوْ", opts: ["Sujud sahwi", "Sujud syukur", "Sujud tilawah", "Takbiratul ihram"], a: 0, exp: "Subhana man la yanamu wa la yashu (Maha Suci Allah yang tidak tidur dan tidak lupa) adalah bacaan sujud sahwi." },
+        { q: "Lafal bacaan Arab di atas merupakan doa utama ketika seseorang melaksanakan...", ar: "سَجَدَ وَجْهِيَ لِلَّذِيْ خَلَقَهُ وَصَوَّرَهُ", opts: ["Sujud tilawah", "Sujud sahwi", "Sujud syukur", "Duduk di antara dua sujud"], a: 0, exp: "Sajada wajhiya lillazi khalaqahu wa shawwarahu... adalah bacaan doa sujud tilawah." }
       ]
     };
 
     /* =========================================================================
-       3. STATE GLOBAL & PENYIMPANAN ANTI-LEMOT (MAP O(1) + DIRTY FLAG)
+       3. STATE GLOBAL & STRUKTUR DATA ANTI-LEMOT (MAP O(1) + DIRTY FLAG)
        ========================================================================= */
     let activeScreen = 'countdownScreen';
     let soundEnabled = true;
@@ -777,7 +802,6 @@
     let resultsViewToken = 'LATIHANASAS1';
     let teacherWatchToken = 'LATIHANASAS1';
 
-    // Data pemain saat ini
     let player = {
       name: '',
       kelas: '',
@@ -840,7 +864,6 @@
     function getActiveScheduleState() {
       const wib = getNowWIB();
       const todayStr = formatDateYMD(wib);
-      const nowMin = wib.getHours() * 60 + wib.getMinutes();
       const nowSecOfDay = wib.getHours() * 3600 + wib.getMinutes() * 60 + wib.getSeconds();
 
       const ov = getTeacherOverride();
@@ -881,7 +904,8 @@
             phase: 'countdown',
             token: todaySched.token,
             label: `${todaySched.label} • 18.00–21.00 WIB`,
-            countdownSec: startSec - nowSecOfDay
+            countdownSec: startSec - nowSecOfDay,
+            isOfficialDay: true
           };
         }
         if (nowSecOfDay < endSec) {
@@ -889,17 +913,19 @@
             phase: 'live',
             token: todaySched.token,
             label: `${todaySched.label} • 18.00–21.00 WIB`,
-            remainingSec: endSec - nowSecOfDay
+            remainingSec: endSec - nowSecOfDay,
+            isOfficialDay: true
           };
         }
         return {
           phase: 'results',
           token: todaySched.token,
-          label: `${todaySched.label} • Sesi Selesai`
+          label: `${todaySched.label} • Sesi Selesai`,
+          isOfficialDay: true
         };
       }
 
-      // Di luar 3 hari tersebut: jika sebelum 27 Nov -> countdown ke 27 Nov 18.00 WIB
+      // Di luar 3 hari resmi: sebelum 27 Nov -> terkunci dengan countdown menuju 27 Nov 18.00 WIB
       const firstStart = new Date('2026-11-27T18:00:00+07:00').getTime();
       const diffSec = Math.floor((firstStart - Date.now()) / 1000);
       if (diffSec > 0) {
@@ -907,15 +933,18 @@
           phase: 'countdown',
           token: 'LATIHANASAS1',
           label: 'Jumat, 27 November 2026 • 18.00–21.00 WIB',
-          countdownSec: diffSec
+          countdownSec: diffSec,
+          outsideDays: true
         };
       }
 
-      // Setelah 29 Nov 2026 -> tampilkan arsip hasil
+      // Setelah 29 Nov 2026 -> terkunci / arsip hasil
       return {
-        phase: 'results',
+        phase: 'countdown',
         token: 'LATIHANASAS3',
-        label: 'Arsip Hasil Persiapan ASAS PAI'
+        label: 'Sesi Resmi 27–29 November 2026 Telah Berakhir',
+        countdownSec: 0,
+        outsideDays: true
       };
     }
 
@@ -951,6 +980,8 @@
         document.getElementById('cdSeconds').textContent = hms.s;
         document.getElementById('cdTokenText').textContent = sched.token;
         document.getElementById('cdDateLabel').textContent = sched.label;
+        document.getElementById('cdLockedNotice').classList.toggle('hidden', !sched.outsideDays);
+        document.getElementById('cdTitle').textContent = sched.outsideDays ? 'Sesi Belum Dibuka' : 'Menuju Main Bareng';
 
         if (!isGameActive && activeScreen !== 'resultsScreen') {
           showScreen('countdownScreen');
@@ -965,7 +996,6 @@
           showScreen('loginScreen');
         }
       } else if (effectivePhase === 'results') {
-        // Jika siswa sedang main dan waktu habis (21.00 WIB), tutup otomatis ke Hasil Top 100
         if (isGameActive && !teacherLocalPreview) {
           isGameActive = false;
           closeModal('questionModal');
@@ -1058,6 +1088,13 @@
       return roomsData.get(token);
     }
 
+    function summarizeFishList(catches) {
+      if (!catches || catches.length === 0) return '-';
+      const counts = {};
+      catches.forEach(c => { counts[c.name] = (counts[c.name] || 0) + 1; });
+      return Object.entries(counts).map(([name, qty]) => `${name} (${qty})`).slice(0, 8).join(', ');
+    }
+
     function initMQTT() {
       try {
         mqttClient = mqtt.connect(MQTT_BROKER_URL, {
@@ -1102,6 +1139,7 @@
                   total: Number(d.t) || 0,
                   fishCount: Number(d.f) || 0,
                   rareCount: Number(d.r) || 0,
+                  fishList: d.fl || '-',
                   tabV: Number(d.tv) || 0,
                   splitV: Number(d.sv) || 0,
                   fastV: Number(d.fv) || 0,
@@ -1142,6 +1180,7 @@
       const now = Date.now();
       const sendNow = () => {
         lastPublishAt = Date.now();
+        const fishSummary = summarizeFishList(player.catches);
         const compact = {
           n: player.name,
           k: player.kelas,
@@ -1151,6 +1190,7 @@
           t: player.total,
           f: player.fishCount,
           r: player.rareCount,
+          fl: fishSummary,
           tv: player.tabViolations,
           sv: player.splitViolations,
           fv: player.fastClicks,
@@ -1161,7 +1201,7 @@
           safeKey: player.safeKey,
           name: compact.n, kelas: compact.k, score: compact.s,
           correct: compact.c, wrong: compact.w, total: compact.t,
-          fishCount: compact.f, rareCount: compact.r,
+          fishCount: compact.f, rareCount: compact.r, fishList: compact.fl,
           tabV: compact.tv, splitV: compact.sv, fastV: compact.fv,
           updatedAt: compact.u
         });
@@ -1370,7 +1410,7 @@
 
       document.getElementById('qText').textContent = qObj.q;
 
-      // Acak urutan opsi A-D
+      // Acak urutan pilihan jawaban A-D setiap kali soal muncul
       const mapped = qObj.opts.map((text, idx) => ({ text, isCorrect: idx === qObj.a }));
       const shuffledOpts = shuffleArray(mapped);
       const letters = ['A', 'B', 'C', 'D'];
@@ -1430,7 +1470,7 @@
         const pool = FISH_CATALOG[currentTier];
         const fish = pool[Math.floor(Math.random() * pool.length)];
         player.catches.unshift({ name: fish.name, emoji: fish.emoji, price: fish.price, pts: meta.points, tier: currentTier });
-        if (player.catches.length > 60) player.catches.pop();
+        if (player.catches.length > 80) player.catches.pop();
 
         resEmoji.textContent = fish.emoji;
         resTitle.textContent = `Tangkapan Sukses! +${meta.points} Poin`;
@@ -1473,7 +1513,7 @@
     }
 
     /* =========================================================================
-       9. KEAMANAN ANTI-CURANG OPTIMAL (TAB, BLUR, SPLIT-SCREEN, COPY-PASTE)
+       9. KEAMANAN ANTI-CURANG (TAB, BLUR, SPLIT-SCREEN, COPY-PASTE, DEVTOOLS)
        ========================================================================= */
     function triggerCheatPenalty(type, reason) {
       if (!isGameActive || !isQuestionOpen) return;
@@ -1547,7 +1587,6 @@
       checkSplitScreen();
     });
 
-    // Blokir klik kanan, copy/cut, dan shortcut DevTools
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
@@ -1566,7 +1605,7 @@
 
     function getSortedRoomRecords(token) {
       const map = getRoomMap(token);
-      return Array.from(map.values()).sort((a, b) => b.score - a.score || b.correct - a.correct || a.tabV - b.tabV);
+      return Array.from(map.values()).sort((a, b) => b.score - a.score || b.correct - a.correct || (a.tabV + a.splitV) - (b.tabV + b.splitV));
     }
 
     function openArenaModal() {
@@ -1651,10 +1690,9 @@
       tokenDirty.set(resultsViewToken, false);
       const all = getSortedRoomRecords(resultsViewToken);
 
-      // Podium 1-2-3
       const pod = document.getElementById('resultsPodium');
       const p1 = all[0], p2 = all[1], p3 = all[2];
-      const card = (r, rank, hClass, bgClass, medal) => `
+      const card = (r, hClass, bgClass, medal) => `
         <div class="${bgClass} ${hClass} rounded-2xl p-2 flex flex-col justify-end items-center border">
           <div class="text-xl">${medal}</div>
           <div class="text-[11px] font-extrabold text-slate-900 truncate w-full">${r ? r.name : '-'}</div>
@@ -1663,11 +1701,10 @@
         </div>
       `;
       pod.innerHTML =
-        card(p2, 2, 'h-24', 'bg-slate-50 border-slate-200', '🥈') +
-        card(p1, 1, 'h-28', 'bg-amber-50 border-amber-300', '🥇') +
-        card(p3, 3, 'h-20', 'bg-orange-50 border-orange-200', '🥉');
+        card(p2, 'h-24', 'bg-slate-50 border-slate-200', '🥈') +
+        card(p1, 'h-28', 'bg-amber-50 border-amber-300', '🥇') +
+        card(p3, 'h-20', 'bg-orange-50 border-orange-200', '🥉');
 
-      // Filter & Search Top 100
       const klsFilter = document.getElementById('resultsClassFilter').value;
       const searchQ = document.getElementById('resultsSearchInput').value.trim().toLowerCase();
 
@@ -1686,17 +1723,20 @@
 
       filtered.forEach((r, idx) => {
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between py-2.5 px-2 text-xs';
+        row.className = 'py-2.5 px-2 text-xs space-y-0.5';
         row.innerHTML = `
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="w-7 font-extrabold text-slate-500">#${idx + 1}</span>
-            <span class="px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 text-[10px] font-extrabold">${r.kelas}</span>
-            <span class="font-bold text-slate-800 truncate">${r.name}</span>
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-7 font-extrabold text-slate-500">#${idx + 1}</span>
+              <span class="px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 text-[10px] font-extrabold">${r.kelas}</span>
+              <span class="font-bold text-slate-800 truncate">${r.name}</span>
+            </div>
+            <div class="shrink-0 text-right">
+              <span class="font-extrabold text-emerald-600">${r.score} pt</span>
+              <span class="text-[10px] text-slate-400 ml-1">(${r.fishCount}🐟 • ${r.rareCount}👑)</span>
+            </div>
           </div>
-          <div class="shrink-0 text-right">
-            <span class="font-extrabold text-emerald-600">${r.score} pt</span>
-            <span class="text-[10px] text-slate-400 ml-1">(${r.fishCount}🐟 • ${r.rareCount}👑)</span>
-          </div>
+          <div class="pl-9 text-[10px] text-slate-400 truncate">Tangkapan: ${r.fishList || '-'}</div>
         `;
         frag.appendChild(row);
       });
@@ -1767,25 +1807,30 @@
 
     function renderTeacherTable() {
       tokenDirty.set(teacherWatchToken, false);
-      const list = getSortedRoomRecords(teacherWatchToken);
+      const klsFilter = document.getElementById('teacherClassFilter').value;
+      const rawList = getSortedRoomRecords(teacherWatchToken);
+      const list = klsFilter === 'ALL' ? rawList : rawList.filter(r => r.kelas === klsFilter);
+
       document.getElementById('teacherCountBadge').textContent = `${list.length} Siswa`;
       const tbody = document.getElementById('teacherTableBody');
       const frag = document.createDocumentFragment();
 
       if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold">Belum ada siswa masuk di token ini.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="p-6 text-center text-slate-400 font-bold">Belum ada siswa masuk di filter ini.</td></tr>';
         return;
       }
 
       list.forEach((r, i) => {
         const acc = r.total > 0 ? Math.round((r.correct / r.total) * 100) : 0;
-        const warn = (r.tabV + r.splitV + r.fastV) > 0 ? 'text-rose-600 font-extrabold' : 'text-slate-400';
+        const totalViol = r.tabV + r.splitV + r.fastV;
+        const warn = totalViol > 0 ? 'text-rose-600 font-extrabold' : 'text-slate-400';
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td class="p-2 font-bold">${i + 1}</td>
           <td class="p-2 font-bold text-slate-800">${r.name}</td>
           <td class="p-2 font-extrabold">${r.kelas}</td>
           <td class="p-2 font-extrabold text-emerald-600">${r.score}</td>
+          <td class="p-2">${r.fishCount}</td>
           <td class="p-2">${r.correct}/${r.wrong}</td>
           <td class="p-2 font-bold">${acc}%</td>
           <td class="p-2">${r.total}</td>
@@ -1819,10 +1864,29 @@
 
     function exportCSV() {
       const list = getSortedRoomRecords(teacherWatchToken);
-      const headers = ['Peringkat', 'Nama Siswa', 'Kelas', 'Poin', 'Ikan', 'Rare', 'Benar', 'Salah', 'Total Soal', 'Akurasi (%)', 'Pindah Tab', 'Split Screen', 'Klik Cepat'];
+      const headers = [
+        'Peringkat', 'Nama', 'Kelas', 'Skor', 'Total Soal', 'Benar', 'Salah', 'Akurasi (%)',
+        'Total Ikan', 'Daftar Ikan Tangkapan', 'Total Pelanggaran', 'Pindah Tab', 'Split-Screen', 'Klik Cepat'
+      ];
       const rows = list.map((r, i) => {
         const acc = r.total > 0 ? Math.round((r.correct / r.total) * 100) : 0;
-        return [i + 1, `"${r.name.replace(/"/g, '""')}"`, r.kelas, r.score, r.fishCount, r.rareCount, r.correct, r.wrong, r.total, acc, r.tabV, r.splitV, r.fastV].join(',');
+        const totViol = r.tabV + r.splitV + r.fastV;
+        return [
+          i + 1,
+          `"${r.name.replace(/"/g, '""')}"`,
+          r.kelas,
+          r.score,
+          r.total,
+          r.correct,
+          r.wrong,
+          acc,
+          r.fishCount,
+          `"${(r.fishList || '-').replace(/"/g, '""')}"`,
+          totViol,
+          r.tabV,
+          r.splitV,
+          r.fastV
+        ].join(',');
       });
       const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1835,19 +1899,21 @@
     function exportXLSX() {
       if (typeof XLSX === 'undefined') { exportCSV(); return; }
       const list = getSortedRoomRecords(teacherWatchToken);
+
       const sheet1Data = list.map((r, i) => ({
         Peringkat: i + 1,
-        'Nama Siswa': r.name,
+        Nama: r.name,
         Kelas: r.kelas,
-        Poin: r.score,
-        'Total Ikan': r.fishCount,
-        'Ikan Rare': r.rareCount,
+        Skor: r.score,
+        'Total Soal': r.total,
         Benar: r.correct,
         Salah: r.wrong,
-        'Total Soal': r.total,
         'Akurasi (%)': r.total > 0 ? Math.round((r.correct / r.total) * 100) : 0,
+        'Total Ikan': r.fishCount,
+        'Daftar Ikan Tangkapan': r.fishList || '-',
+        'Total Pelanggaran': r.tabV + r.splitV + r.fastV,
         'Pindah Tab': r.tabV,
-        'Split Screen': r.splitV,
+        'Split-Screen': r.splitV,
         'Klik Cepat': r.fastV
       }));
 
@@ -1855,8 +1921,14 @@
         const sub = list.filter(r => r.kelas === kls);
         const avg = sub.length ? Math.round(sub.reduce((s, x) => s + x.score, 0) / sub.length) : 0;
         const max = sub.length ? Math.max(...sub.map(x => x.score)) : 0;
-        const viol = sub.reduce((s, x) => s + x.tabV + x.splitV, 0);
-        return { Kelas: kls, 'Jumlah Peserta': sub.length, 'Rata-rata Poin': avg, 'Poin Tertinggi': max, 'Total Pelanggaran': viol };
+        const viol = sub.reduce((s, x) => s + x.tabV + x.splitV + x.fastV, 0);
+        return {
+          Kelas: kls,
+          'Jumlah Peserta': sub.length,
+          'Rata-rata Skor': avg,
+          'Skor Tertinggi': max,
+          'Total Pelanggaran': viol
+        };
       });
 
       const wb = XLSX.utils.book_new();
@@ -2024,7 +2096,7 @@
       }
       ctx.stroke();
 
-      // Ikan berenang di 4 lapisan
+      // Siluet ikan berenang di 4 lapisan (Rare berkilau emas)
       bgFish.forEach(f => {
         if (!liteMode) {
           f.x += f.speed;
@@ -2035,6 +2107,10 @@
         ctx.save();
         ctx.translate(f.x, fy);
         if (f.speed < 0) ctx.scale(-1, 1);
+        if (f.rare && !liteMode) {
+          ctx.shadowColor = '#facc15';
+          ctx.shadowBlur = 10;
+        }
         ctx.fillStyle = f.color;
         ctx.beginPath();
         ctx.ellipse(0, 0, f.size, f.size * 0.55, 0, 0, Math.PI * 2);
@@ -2053,7 +2129,6 @@
       const boatX = w * 0.28;
       const boatY = seaY - 4 + bob;
 
-      // Badan perahu
       ctx.fillStyle = '#92400e';
       ctx.beginPath();
       ctx.moveTo(boatX - 42, boatY);
@@ -2065,13 +2140,13 @@
 
       // Siswa berpeci
       ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(boatX - 8, boatY - 22, 16, 22); // Baju putih
+      ctx.fillRect(boatX - 8, boatY - 22, 16, 22);
       ctx.fillStyle = '#fed7aa';
       ctx.beginPath();
-      ctx.arc(boatX, boatY - 29, 8, 0, Math.PI * 2); // Kepala
+      ctx.arc(boatX, boatY - 29, 8, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(boatX - 8, boatY - 38, 16, 6); // Peci hitam
+      ctx.fillRect(boatX - 8, boatY - 38, 16, 6);
 
       // Joran pancing
       const rodTipX = boatX + 58;
